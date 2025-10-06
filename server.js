@@ -35,66 +35,77 @@ app.get("/", (req, res, next) => {
 
 // Register a new lab
 app.post("/api/v1/system/lab/add",
-    labAccountValidationRules,
-    handleValidationErrors,
+    labAccountValidationRules, handleValidationErrors,
     labController.postLab
 )
 
 // Search a lab
 app.get("/api/v1/system/lab/search",
-    searchLabValidationRules,
-    handleValidationErrors,
+    searchLabValidationRules, handleValidationErrors,
     labController.getLab
 )
 
 // Get labs by zone and subzone 
 app.post("/api/v1/system/lab/zoneId",
-    validateMongoId('zoneId', 'Zone ID'),
-    handleValidationErrors,
+    validateMongoId('zoneId', 'Zone ID'), handleValidationErrors,
     labController.getLabsByZoneId)
 
 app.post("/api/v1/system/lab/subZoneId",
-    validateMongoId('subZoneId', 'Sub Zone ID'),
-    handleValidationErrors,
+    validateMongoId('subZoneId', 'Sub Zone ID'), handleValidationErrors,
     labController.getLabsBySubZoneId)
 
 // List of all labs
-app.get("/api/v1/system/lab/all", labController.getAllLabs)
+app.get("/api/v1/system/lab/all",
+    labController.getAllLabs
+)
 
 // Edit lab data
 app.patch("/api/v1/system/lab/edit",
-    labAccountValidationRules,
-    handleValidationErrors,
+    labAccountValidationRules, handleValidationErrors,
     labController.patchLab
 )
 
 // delete a lab
 app.delete("/api/v1/system/lab/delete",
-    validateLabId,
-    handleValidationErrors,
+    validateLabId, handleValidationErrors,
     labController.deleteLab
 )
 
 
 // Lab Zone routes
 app.post("/api/v1/labzone/add",
-    zoneValidationRules, handleValidationErrors, zoneController.postZone)
+    zoneValidationRules, handleValidationErrors,
+    zoneController.postZone
+)
 app.patch("/api/v1/labzone/edit",
-    validateMongoId("zoneId", "Zone ID"), zoneValidationRules, handleValidationErrors, zoneController.patchZone)
+    validateMongoId("zoneId", "Zone ID"), zoneValidationRules, handleValidationErrors,
+    zoneController.patchZone
+)
 app.delete("/api/v1/labzone/delete",
-    validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.deleteZone)
+    validateMongoId("zoneId", "Zone ID"), handleValidationErrors,
+    zoneController.deleteZone
+)
 app.get("/api/v1/labzone/all",
-    zoneController.getZones)
+    zoneController.getZones
+)
 app.get("/api/v1/labzone/",
-    validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.getZone)
+    validateMongoId("zoneId", "Zone ID"), handleValidationErrors,
+    zoneController.getZone
+)
 
 // Lab Sub Zone routes
 app.post("/api/v1/labzone/subzone/add",
-    subZoneValidationRules, handleValidationErrors, zoneController.postSubZone)
+    subZoneValidationRules, handleValidationErrors,
+    zoneController.postSubZone
+)
 app.put("/api/v1/labzone/subzone/edit",
-    subZoneValidationRules,  validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors, zoneController.putSubZone)
+    subZoneValidationRules, validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,
+    zoneController.putSubZone
+)
 app.delete("/api/v1/labzone/subzone/delete",
-    validateMongoId("zoneId", "Zone ID"), validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors, zoneController.deleteSubZone)
+    validateMongoId("zoneId", "Zone ID"), validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,
+    zoneController.deleteSubZone
+)
 
 
 // 404 Not Found Handler

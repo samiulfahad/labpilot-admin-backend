@@ -1,0 +1,147 @@
+##################### Lab  ####################### 
+
+# Route 1: Create a new lab
+###
+POST http://localhost:3000/api/v1/system/lab/add HTTP/1.1
+content-type: application/json
+
+{
+    "labName": "City Diagnostic Center  ",
+    "labId": 112233,
+    "address": "123 Medical Street, Healthcare City",
+    "contact1": "01723939836",
+    "contact2": "98765432101",
+    "email": "contact@citydiagnostic.com",
+    "zone": "Mymensingh",
+    "subZone":"Bhaluka",
+    "activeStatus": true
+}
+
+
+# Route 2: Edit lab Data
+###
+PATCH http://localhost:3000/api/v1/system/lab/edit HTTP/1.1
+content-type: application/json
+
+{
+    "labName": "xCity Diagnostic Center ",
+    "labId": 112233,
+    "address": "123 Medical Street, Healthcare City",
+    "contact1": 12345678901,
+    "contact2": 98765432101,
+    "email": "contact@citydiagnostic.com",
+    "zone": "Dhaka",
+    "subZone":"Mohakhali",
+    "activeStatus": true
+}
+
+# Route 3: Get a lab by labId, email, contact
+###
+GET http://localhost:3000/api/v1/system/lab/search HTTP/1.1
+content-type: application/json
+
+{
+    "field":"labId",
+    "value": 112244
+}
+
+# Route 4: Find All Labs
+###
+GET http://localhost:3000/api/v1/system/lab/all HTTP/1.1
+content-type: application/json
+
+
+# Route 5: Delete a lab
+###
+DELETE http://localhost:3000/api/v1/system/lab/delete HTTP/1.1
+content-type: application/json
+
+{
+    "labId": 112244
+}
+
+
+
+#################### Zone  ####################### 
+
+# Route 1: Create a zone
+###
+POST http://localhost:3000/api/v1/labzone/add HTTP/1.1
+content-type: application/json
+
+{
+    "zoneName": "Chittagong"
+}
+
+# Route 2: Create a subzone
+###
+POST http://localhost:3000/api/v1/labzone/subzone/add HTTP/1.1
+content-type: application/json
+
+{
+    "subZoneName": "Bhaluka",
+    "zoneId":"68e3d3b6efbf8e25e1de1c9b"
+}
+
+# Route 3: Edit a zone name
+###
+PATCH http://localhost:3000/api/v1/labzone/edit HTTP/1.1
+content-type: application/json
+
+{
+    "zoneName": "Chittagong",
+    "zoneId": "68e3de076d88bc917e2a69b1"
+}
+
+# Route 4: Edit a subzone name
+###
+PUT http://localhost:3000/api/v1/labzone/subzone/edit HTTP/1.1
+content-type: application/json
+
+{
+    "subZoneName": "Trishal Updated",
+    "zoneId": "68e3d3b6efbf8e25e1de1c9b",
+    "subZoneId" : "68e3ec1f15f59bd2be28e935"
+}
+
+
+# Route 5: Delete a zone
+###
+DELETE http://localhost:3000/api/v1/labzone/delete HTTP/1.1
+content-type: application/json
+
+{
+    "zoneId": "68e3d715952f3248ccd98378"
+}
+
+# Route 6: Delete a sub zone
+###
+DELETE http://localhost:3000/api/v1/labzone/subzone/delete HTTP/1.1
+content-type: application/json
+
+{
+    "zoneId": "68e3d3b6efbf8e25e1de1c9b",
+    "subZoneId": "68e3ec1f15f59bd2be28e935"
+
+}
+
+
+# Route 7: Get a zone
+###
+GET http://localhost:3000/api/v1/labzone HTTP/1.1
+content-type: application/json
+
+{
+    "zoneId" : "68e3d3b6efbf8e25e1de1c9b"
+}
+
+# Route 8: Get all zones
+###
+GET http://localhost:3000/api/v1/labzone/all HTTP/1.1
+content-type: application/json
+
+
+
+
+
+

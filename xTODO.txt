@@ -1,0 +1,9 @@
+Running Task:
+Task 1: Test Zone Routes
+
+
+
+Tasks to do:
+Task 1: Test Zone Routes
+Task 2: Implement Zone validation Rules
+Task 3: Test Lab Routes

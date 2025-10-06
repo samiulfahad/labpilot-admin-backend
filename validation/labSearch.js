@@ -4,14 +4,14 @@ const { body } = require("express-validator");
 
 // Validate search field
 const validateSearchField = body("field")
-    .exists({ checkFalsy: true })
+    .notEmpty()
     .withMessage("Search field is required.")
     .isIn(['labId', 'email', 'contact'])
     .withMessage("Invalid search param");
 
 // Validate search value
 const validateSearchValue = body("value")
-    .exists({ checkFalsy: true })
+    .notEmpty()
     .withMessage("Search value is required.")
     .isLength({ max: 50 })
     .withMessage("Search value must not exceed 50 characters.")

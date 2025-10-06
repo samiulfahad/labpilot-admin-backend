@@ -70,7 +70,7 @@ POST http://localhost:3000/api/v1/labzone/add HTTP/1.1
 content-type: application/json
 
 {
-    "zoneName": "Chittagong"
+    "zoneName": "Chityy"
 }
 
 # Route 2: Create a subzone
@@ -79,7 +79,7 @@ POST http://localhost:3000/api/v1/labzone/subzone/add HTTP/1.1
 content-type: application/json
 
 {
-    "subZoneName": "Bhaluka",
+    "subZoneName": "Goo",
     "zoneId":"68e3d3b6efbf8e25e1de1c9b"
 }
 
@@ -89,7 +89,7 @@ PATCH http://localhost:3000/api/v1/labzone/edit HTTP/1.1
 content-type: application/json
 
 {
-    "zoneName": "Chittagong",
+    "zoneName": "Chio",
     "zoneId": "68e3de076d88bc917e2a69b1"
 }
 
@@ -99,9 +99,9 @@ PUT http://localhost:3000/api/v1/labzone/subzone/edit HTTP/1.1
 content-type: application/json
 
 {
-    "subZoneName": "Trishal Updated",
-    "zoneId": "68e3d3b6efbf8e25e1de1c9b",
-    "subZoneId" : "68e3ec1f15f59bd2be28e935"
+    "subZoneName": "TriX",
+    "zoneId": "68e3de076d88bc917e2a69b1",
+    "subZoneId" : "68e3de076d88bc917e2a69b1"
 }
 
 
@@ -121,7 +121,7 @@ content-type: application/json
 
 {
     "zoneId": "68e3d3b6efbf8e25e1de1c9b",
-    "subZoneId": "68e3ec1f15f59bd2be28e935"
+    "subZoneId": "68e405c10741cc2f3afca887"
 
 }
 

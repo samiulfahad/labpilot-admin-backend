@@ -12,6 +12,7 @@ const zoneController = require('./controller/zone')
 // Data validation Rules
 const { labAccountValidationRules, validateLabId } = require("./validation/labAccount")
 const { searchLabValidationRules } = require("./validation/labSearch")
+const { subZoneValidationRules, zoneValidationRules } = require("./validation/zone")
 const { validateMongoId } = require("./validation/mongoId")
 const handleValidationErrors = require("./validation/handleValidationErrors");
 
@@ -74,19 +75,26 @@ app.delete("/api/v1/system/lab/delete",
     labController.deleteLab
 )
 
+
 // Lab Zone routes
-app.post("/api/v1/labzone/add", zoneController.postZone)
-app.patch("/api/v1/labzone/edit", zoneController.patchZone)
-app.delete("/api/v1/labzone/delete", zoneController.deleteZone)
-app.get("/api/v1/labzone/all", zoneController.getZones)
-app.get("/api/v1/labzone/", zoneController.getZone)
+app.post("/api/v1/labzone/add",
+    zoneValidationRules, handleValidationErrors, zoneController.postZone)
+app.patch("/api/v1/labzone/edit",
+    validateMongoId("zoneId", "Zone ID"), zoneValidationRules, handleValidationErrors, zoneController.patchZone)
+app.delete("/api/v1/labzone/delete",
+    validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.deleteZone)
+app.get("/api/v1/labzone/all",
+    zoneController.getZones)
+app.get("/api/v1/labzone/",
+    validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.getZone)
 
 // Lab Sub Zone routes
-app.post("/api/v1/labzone/subzone/add", zoneController.postSubZone)
-app.put("/api/v1/labzone/subzone/edit", zoneController.putSubZone)
-app.delete("/api/v1/labzone/subzone/delete", zoneController.deleteSubZone)
-
-
+app.post("/api/v1/labzone/subzone/add",
+    subZoneValidationRules, handleValidationErrors, zoneController.postSubZone)
+app.put("/api/v1/labzone/subzone/edit",
+    subZoneValidationRules,  validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors, zoneController.putSubZone)
+app.delete("/api/v1/labzone/subzone/delete",
+    validateMongoId("zoneId", "Zone ID"), validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors, zoneController.deleteSubZone)
 
 
 // 404 Not Found Handler

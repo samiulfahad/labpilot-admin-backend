@@ -14,7 +14,7 @@ content-type: application/json
     "email": "contact@citydiagnostic.com",
     "zoneId": "68e3d3b6efbf8e25e1de1c9b",
     "subZoneId":"68e3ec2815f59bd2be28e936",
-    "activeStatus": true
+    "isActive": true
 }
 
 
@@ -33,7 +33,7 @@ content-type: application/json
     "email": "contact@example.com",
     "zoneId": "68dacb340b6f2cb529c079ca",
     "subZoneId":"68dacb340b6f2cb529c079cb",
-    "activeStatus": true
+    "isActive": true
 }
 
 # Route 3a: Delete (Soft) a lab

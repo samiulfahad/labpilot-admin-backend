@@ -11,18 +11,18 @@ const handleError = (e, methodName) => {
 };
 
 class Lab {
-  constructor(labName, labId, address, zoneId, subZoneId, contact1, contact2, email, activeStatus, systemId) {
+  constructor(labName, labId, address, zoneId, subZoneId, contact1, contact2, email, isActive, systemId) {
     this.labName = labName;
     this.labId = labId;
     this.address = address;
-    this.zoneId = new ObjectId(zoneId); // ✅ Consistent ObjectId
-    this.subZoneId = new ObjectId(subZoneId); // ✅ Consistent ObjectId
     this.contact1 = contact1.toString();
     this.contact2 = contact2.toString();
     this.email = email;
-    this.activeStatus = activeStatus;
-    this.invoicePrice = 10;
+    this.isActive = isActive;
+    this.zoneId = new ObjectId(zoneId); // ✅ Consistent ObjectId
+    this.subZoneId = new ObjectId(subZoneId); // ✅ Consistent ObjectId
     this.labIncentive = 4;
+    this.invoicePrice = 10;
     this.hasWarning = false;
     this.warning = "";
     this.totalReceipt = 0;
@@ -139,7 +139,7 @@ class Lab {
         contact2: 1,
         zoneId: 1,
         subZoneId: 1,
-        activeStatus: 1,
+        isActive: 1,
         createdAt: 1
       };
 
@@ -184,7 +184,7 @@ class Lab {
         contact2: 1,
         zoneId: 1,
         subZoneId: 1,
-        activeStatus: 1,
+        isActive: 1,
         createdAt: 1
       };
 
@@ -237,11 +237,11 @@ class Lab {
 
       const totalLabs = await db.collection("labs").countDocuments({ isDeleted: { $ne: true } });
       const activeLabs = await db.collection("labs").countDocuments({
-        activeStatus: true,
+        isActive: true,
         isDeleted: { $ne: true }
       });
       const inactiveLabs = await db.collection("labs").countDocuments({
-        activeStatus: false,
+        isActive: false,
         isDeleted: { $ne: true }
       });
       const deletedLabs = await db.collection("labs").countDocuments({ isDeleted: true });

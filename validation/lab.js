@@ -62,7 +62,7 @@ const validateEmail = body('email')
     .normalizeEmail();
 
 // Active Status: required, must be boolean
-const validateActiveStatus = body('activeStatus')
+const validateIsActive = body('isActive')
     .notEmpty()
     .withMessage('Active status is required.')
     .bail()
@@ -84,7 +84,7 @@ const labValidationRules = [
     validateEmail,
     validateZone,
     validateSubZone,
-    validateActiveStatus
+    validateIsActive
 ];
 
 module.exports = {
@@ -96,6 +96,6 @@ module.exports = {
     validateEmail,
     validateZone,
     validateSubZone,
-    validateActiveStatus,
+    validateIsActive,
     labValidationRules
 };

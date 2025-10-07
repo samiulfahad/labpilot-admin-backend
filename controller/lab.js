@@ -7,9 +7,9 @@ const postLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user (from middleware)
     const systemId = req.user?.id || req.user?.systemId || 555; // Fallback for development
-    const { labName, labId, address, zoneId, subZoneId, email, contact1, contact2, activeStatus } = req.body;
+    const { labName, labId, address, zoneId, subZoneId, email, contact1, contact2,  } = req.body;
     
-    const lab = new Lab(labName, labId, address, zoneId, subZoneId, contact1.toString(), contact2.toString(), email, activeStatus, systemId);
+    const lab = new Lab(labName, labId, address, zoneId, subZoneId, contact1.toString(), contact2.toString(), email, , systemId);
     const success = await lab.save();
     
     if (success) {
@@ -57,8 +57,8 @@ const patchLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user
     const systemId = req.user?.id || req.user?.systemId || 777;
-    const { _id, labName, address, zoneId, subZoneId, contact1, contact2, email, activeStatus } = req.body;
-    const newData = { labName, address, zoneId, subZoneId, contact1, contact2, email, activeStatus };
+    const { _id, labName, address, zoneId, subZoneId, contact1, contact2, email,  } = req.body;
+    const newData = { labName, address, zoneId, subZoneId, contact1, contact2, email,  };
     
     const success = await Lab.updateById(_id, newData, systemId);
     if (success) {
@@ -115,8 +115,8 @@ const getLabStats = async (req, res, next) => {
     const db = getClient();
     
     const totalLabs = await db.collection("labs").countDocuments();
-    const activeLabs = await db.collection("labs").countDocuments({ activeStatus: true });
-    const inactiveLabs = await db.collection("labs").countDocuments({ activeStatus: false });
+    const activeLabs = await db.collection("labs").countDocuments({ : true });
+    const inactiveLabs = await db.collection("labs").countDocuments({ : false });
     
     // Count labs by zone (you might need to adjust based on your zone structure)
     const labsByZone = await db.collection("labs").aggregate([

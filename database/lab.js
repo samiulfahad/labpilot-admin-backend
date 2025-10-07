@@ -1,13 +1,13 @@
 /** @format */
 
-const { ObjectId } = require("mongodb");
+const { ObjectId, ClientSession } = require("mongodb");
 const { getClient } = require("./connection");
 
 const handleError = (e, methodName) => {
-    console.log("Error Location: DB File (database > lab.js)");
-    console.log(`Method Name: ${methodName}`);
-    console.log(`Error Message: ${e.message}`);
-    return null;
+  console.log("Error Location: DB File (database > lab.js)");
+  console.log(`Method Name: ${methodName}`);
+  console.log(`Error Message: ${e.message}`);
+  return null;
 };
 
 class Lab {
@@ -57,29 +57,29 @@ class Lab {
   }
 
   // Function 2: Update Lab
-  static async updateById(labId, newData, systemId) {
+  static async updateById(_id, newData, systemId) {
     try {
       const db = getClient();
 
-      // Remove protected fields from update data
-      const { _id, createdAt, createdBy, labId: ignoreLabId, ...safeData } = newData;
+      // Create a copy of newData to avoid modifying the original
+      const updateData = { ...newData };
 
-      // Convert zoneId and subZoneId to ObjectId if present
-      if (safeData.zoneId) {
-        safeData.zoneId = new ObjectId(safeData.zoneId);
+      // Convert zoneId and subZoneId to ObjectId if present and valid
+      if (updateData.zoneId && typeof updateData.zoneId === 'string') {
+        updateData.zoneId = new ObjectId(updateData.zoneId);
       }
-      if (safeData.subZoneId) {
-        safeData.subZoneId = new ObjectId(safeData.subZoneId);
+      if (updateData.subZoneId && typeof updateData.subZoneId === 'string') {
+        updateData.subZoneId = new ObjectId(updateData.subZoneId);
       }
 
       const updateFields = {
-        ...safeData,
+        ...updateData,
         updatedAt: new Date(),
         updatedBy: systemId
       };
 
       const result = await db.collection("labs").updateOne(
-        { labId: labId, isDeleted: { $ne: true } }, // Filter by labId and not deleted
+        { _id: new ObjectId(_id), isDeleted: { $ne: true } },
         { $set: updateFields }
       );
 
@@ -89,13 +89,13 @@ class Lab {
     }
   }
 
-  // Function 3a: Soft delete - mark as deleted without actually removing
-  static async softDeleteById(labId, systemId) {
+  // Function 3: Soft delete - mark as deleted without actually removing
+  static async deleteById(_id, systemId) {
     try {
       const db = getClient();
 
       const result = await db.collection("labs").updateOne(
-        { labId: labId, isDeleted: { $ne: true } },
+        { _id: new ObjectId(_id), isDeleted: { $ne: true } },
         {
           $set: {
             isDeleted: true,
@@ -112,63 +112,21 @@ class Lab {
       return handleError(e, "softDeleteById");
     }
   }
-
-  // Function 3b: Hard delete with archiving
-  static async deleteById(labId, systemId) {
+  // Function 3b: Hard delete - completely remove from database
+  static async removeById(_id) {
     try {
       const db = getClient();
 
-      // First, find the lab to be deleted (only non-deleted ones)
-      const labToDelete = await db.collection("labs").findOne({
-        labId: labId,
-        isDeleted: { $ne: true }
-      });
-
-      if (!labToDelete) {
-        console.log("Lab not found for deletion");
-        return false;
-      }
-
-      // Prepare the deleted lab document with additional fields
-      const deletedLab = {
-        ...labToDelete,
-        deletedAt: new Date(),
-        deletedBy: systemId,
-        originalId: labToDelete._id, // Keep reference to original document ID
-        archiveReason: "manual_deletion"
-      };
-
-      // Remove the original _id to avoid duplicate key error when inserting
-      delete deletedLab._id;
-
-      // First, copy the lab data to deletedLabs collection
-      const archiveResult = await db.collection("deletedLabs").insertOne(deletedLab);
-
-      if (!archiveResult.insertedId) {
-        console.log("Failed to archive lab data");
-        return false;
-      }
-
-      // Then, delete the lab from the original collection
-      const deleteResult = await db.collection("labs").deleteOne({ labId: labId });
-
-      if (deleteResult.deletedCount > 0) {
-        console.log(`Lab ${labId} successfully deleted and archived`);
-        return true;
-      } else {
-        // If deletion failed but we already archived, clean up the archive
-        await db.collection("deletedLabs").deleteOne({ _id: archiveResult.insertedId });
-        console.log("Deletion failed - archive cleaned up");
-        return false;
-      }
-
+      const result = await db.collection("labs").deleteOne(
+        { _id: new ObjectId(_id) }
+      );
+      return result.deletedCount > 0;
     } catch (e) {
-      console.error("Error in deleteById:", e.message);
-      return handleError(e, "deleteById");
+      return handleError(e, "removeById");
     }
   }
 
-  // Function 4: Find labs by field
+  // Function 4: Search / Find labs by field (by Lab Id, email, contact, zone id, subzone id)
   static async find(field, value) {
     try {
       const projection = {
@@ -187,18 +145,31 @@ class Lab {
 
       const db = getClient();
 
-      // Handle ObjectId conversion for specific fields
-      let query = { [field]: value, isDeleted: { $ne: true } };
-      if (field === 'zoneId' || field === 'subZoneId') {
-        query = { [field]: new ObjectId(value), isDeleted: { $ne: true } };
-      }
+      let query = { isDeleted: { $ne: true } };
 
+      // Handle ObjectId conversion for specific fields
+      if (field === 'zoneId' || field === 'subZoneId') {
+        query[field] = new ObjectId(value);
+      }
+      // Handle contact search - search both contact1 and contact2 fields
+      else if (field === 'contact') {
+        query.$or = [
+          { contact1: value },
+          { contact2: value }
+        ];
+      }
+      // Default case for other fields
+      else {
+        query[field] = value;
+      }
+      console.log(query);
       const labs = await db.collection("labs").find(query).project(projection).toArray();
       return labs; // ✅ Always return array (empty if no results)
     } catch (e) {
       return handleError(e, "find");
     }
   }
+
 
   // Function 5: Find all labs (non-deleted only)
   static async findAll() {
@@ -229,172 +200,7 @@ class Lab {
     }
   }
 
-  // Function 6: Find all labs under a zone
-  static async findByZone(zoneId) {
-    try {
-      const projection = {
-        labName: 1,
-        address: 1,
-        contact1: 1,
-        contact2: 1,
-        email: 1,
-        activeStatus: 1,
-        labId: 1,
-        zoneId: 1,
-        subZoneId: 1
-      };
 
-      const db = getClient();
-      const labs = await db.collection("labs")
-        .find({
-          zoneId: new ObjectId(zoneId),
-          isDeleted: { $ne: true }
-        })
-        .project(projection)
-        .toArray();
-
-      return labs; // ✅ Always return array
-    } catch (e) {
-      return handleError(e, "findByZone");
-    }
-  }
-
-  // Function 7: Find all labs under a sub zone
-  static async findBySubZone(subZoneId) {
-    try {
-      const projection = {
-        labName: 1,
-        address: 1,
-        contact1: 1,
-        contact2: 1,
-        email: 1,
-        activeStatus: 1,
-        labId: 1,
-        zoneId: 1,
-        subZoneId: 1
-      };
-
-      const db = getClient();
-      const labs = await db.collection("labs")
-        .find({
-          subZoneId: new ObjectId(subZoneId),
-          isDeleted: { $ne: true }
-        })
-        .project(projection)
-        .toArray();
-
-      return labs; // ✅ Always return array
-    } catch (e) {
-      return handleError(e, "findBySubZone");
-    }
-  }
-
-  // Function 8: Search labs with multiple criteria
-  static async search(searchCriteria) {
-    try {
-      const projection = {
-        _id: 0,
-        labName: 1,
-        labId: 1,
-        address: 1,
-        email: 1,
-        contact1: 1,
-        contact2: 1,
-        zoneId: 1,
-        subZoneId: 1,
-        activeStatus: 1
-      };
-
-      const db = getClient();
-
-      // Build query with non-deleted filter
-      const query = { isDeleted: { $ne: true } };
-
-      // Add search criteria
-      if (searchCriteria.labName) {
-        query.labName = { $regex: searchCriteria.labName, $options: 'i' };
-      }
-      if (searchCriteria.email) {
-        query.email = searchCriteria.email;
-      }
-      if (searchCriteria.contact) {
-        query.$or = [
-          { contact1: searchCriteria.contact },
-          { contact2: searchCriteria.contact }
-        ];
-      }
-      if (searchCriteria.zoneId) {
-        query.zoneId = new ObjectId(searchCriteria.zoneId);
-      }
-      if (searchCriteria.subZoneId) {
-        query.subZoneId = new ObjectId(searchCriteria.subZoneId);
-      }
-      if (searchCriteria.activeStatus !== undefined) {
-        query.activeStatus = searchCriteria.activeStatus;
-      }
-
-      const labs = await db.collection("labs")
-        .find(query)
-        .project(projection)
-        .toArray();
-
-      return labs; // ✅ Always return array
-    } catch (e) {
-      return handleError(e, "search");
-    }
-  }
-
-  // Function 9: Find lab by ID with full details (for internal use)
-  static async findById(labId, includeSensitive = false) {
-    try {
-      const db = getClient();
-
-      // Basic projection (public fields)
-      let projection = {
-        _id: 0,
-        labName: 1,
-        labId: 1,
-        address: 1,
-        email: 1,
-        contact1: 1,
-        contact2: 1,
-        zoneId: 1,
-        subZoneId: 1,
-        activeStatus: 1,
-        invoicePrice: 1,
-        labIncentive: 1,
-        hasWarning: 1,
-        warning: 1,
-        totalReceipt: 1,
-        payableAmount: 1,
-        createdAt: 1,
-        updatedAt: 1
-      };
-
-      // Include sensitive fields if requested
-      if (includeSensitive) {
-        projection = {
-          ...projection,
-          billingHistory: 1,
-          staffs: 1,
-          admins: 1,
-          referrers: 1,
-          testList: 1,
-          createdBy: 1,
-          updatedBy: 1
-        };
-      }
-
-      const lab = await db.collection("labs").findOne(
-        { labId: labId, isDeleted: { $ne: true } },
-        { projection }
-      );
-
-      return lab; // Return object or null
-    } catch (e) {
-      return handleError(e, "findById");
-    }
-  }
 
   // Function 10: Restore soft-deleted lab
   static async restoreLab(labId, systemId) {

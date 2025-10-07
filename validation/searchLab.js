@@ -6,7 +6,7 @@ const { body } = require("express-validator");
 const validateSearchField = body("field")
     .notEmpty()
     .withMessage("Search field is required.")
-    .isIn(['labId', 'email', 'contact'])
+    .isIn(['labId', 'email', 'contact', 'zoneId', 'subZoneId'])
     .withMessage("Invalid search param");
 
 // Validate search value
@@ -43,6 +43,21 @@ const validateSearchValue = body("value")
             return true;
         }
 
+        if (field === 'zoneId') {
+            // For zoneId, validate as MongoDB ObjectId
+            if (!/^[0-9a-fA-F]{24}$/.test(value)) {
+                throw new Error('Invalid Zone ID format');
+            }
+            return true;
+        }
+
+        if (field === 'subZoneId') {
+            // For subZoneId, validate as MongoDB ObjectId
+            if (!/^[0-9a-fA-F]{24}$/.test(value)) {
+                throw new Error('Invalid Sub Zone ID format');
+            }
+            return true;
+        }
         return true;
     });
 

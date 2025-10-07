@@ -10,8 +10,8 @@ const zoneController = require('./controller/zone')
 
 
 // Data validation Rules
-const { labAccountValidationRules, validateLabId } = require("./validation/labAccount")
-const { searchLabValidationRules } = require("./validation/labSearch")
+const { labValidationRules, validateLabId } = require("./validation/lab")
+const { searchLabValidationRules } = require("./validation/searchLab")
 const { subZoneValidationRules, zoneValidationRules } = require("./validation/zone")
 const { validateMongoId } = require("./validation/mongoId")
 const handleValidationErrors = require("./validation/handleValidationErrors");
@@ -32,45 +32,40 @@ app.get("/", (req, res, next) => {
 });
 
 
-
 // Register a new lab
-app.post("/api/v1/system/lab/add",
-    labAccountValidationRules, handleValidationErrors,
+app.post("/api/v1/lab/add",
+    labValidationRules, handleValidationErrors,
     labController.postLab
 )
+// Edit lab data
+app.patch("/api/v1/lab/edit",
+    labValidationRules, validateMongoId("_id", "lab ID"), handleValidationErrors,
+    labController.patchLab
+)
 
-// Search a lab
+// delete (soft) a lab
+app.delete("/api/v1/lab/delete",
+    validateMongoId("_id", "Lab ID"), handleValidationErrors,
+    labController.deleteLab
+)
+
+// remove or permanently delete a lab
+app.delete("/api/v1/lab/remove",
+    validateMongoId("_id", "Lab ID"), handleValidationErrors,
+    labController.removeLab
+)
+
+// Search lab (by Lab Id, email, contact, zone id, subzone id)
 app.get("/api/v1/system/lab/search",
     searchLabValidationRules, handleValidationErrors,
     labController.getLab
 )
 
-// Get labs by zone and subzone 
-app.post("/api/v1/system/lab/zoneId",
-    validateMongoId('zoneId', 'Zone ID'), handleValidationErrors,
-    labController.getLabsByZoneId)
-
-app.post("/api/v1/system/lab/subZoneId",
-    validateMongoId('subZoneId', 'Sub Zone ID'), handleValidationErrors,
-    labController.getLabsBySubZoneId)
 
 // List of all labs
 app.get("/api/v1/system/lab/all",
     labController.getAllLabs
 )
-
-// Edit lab data
-app.patch("/api/v1/system/lab/edit",
-    labAccountValidationRules, handleValidationErrors,
-    labController.patchLab
-)
-
-// delete a lab
-app.delete("/api/v1/system/lab/delete",
-    validateLabId, handleValidationErrors,
-    labController.deleteLab
-)
-
 
 // Lab Zone routes
 app.post("/api/v1/labzone/add",

@@ -1,5 +1,6 @@
 /** @format */
 const { body } = require("express-validator");
+const { validateMongoId } = require("./mongoId")
 
 // Validate labName
 const validateLabName = body("labName")
@@ -31,6 +32,7 @@ const validateAddress = body("address")
 
 // Contact: required, exactly 11 numeric digits
 const validateContact1 = body('contact1')
+    .customSanitizer(value => (value === null || value === undefined ? '' : value.toString()))
     .notEmpty()
     .withMessage('Contact Number is required.')
     .bail()
@@ -38,10 +40,11 @@ const validateContact1 = body('contact1')
     .withMessage('Contact must contain only numeric digits.')
     .bail()
     .isLength({ min: 11, max: 11 })
-    .withMessage('Contact must contain exactly 11 numeric digits.');
+    .withMessage('Contact must contain exactly 11 numeric digits.')
 
 // Contact: optional, but if provided must be exactly 11 numeric digits
 const validateContact2 = body('contact2')
+    .customSanitizer(value => (value === null || value === undefined ? '' : value.toString()))
     .optional()
     .isNumeric()
     .withMessage('Contact must contain only numeric digits.')
@@ -67,22 +70,12 @@ const validateActiveStatus = body('activeStatus')
     .withMessage('Active status must be either true or false.');
 
 // Zone: required, must be a string
-const validateZone = body('zone')
-    .notEmpty()
-    .withMessage('Zone is required')
-    .bail()
-    .isMongoId()
-    .withMessage('Invalid Zone ID')
+const validateZone = validateMongoId("zoneId", "Zone ID")
 
 // Sub Zone: required, must be a string
-const validateSubZone = body('subZone')
-    .notEmpty()
-    .withMessage('Subzone is required')
-    .bail()
-    .isMongoId()
-    .withMessage('Invalid Subzone ID')
+const validateSubZone = validateMongoId("subZoneId", "Subzone ID")
 
-const labAccountValidationRules = [
+const labValidationRules = [
     validateLabName,
     validateLabId,
     validateAddress,
@@ -104,5 +97,5 @@ module.exports = {
     validateZone,
     validateSubZone,
     validateActiveStatus,
-    labAccountValidationRules
+    labValidationRules
 };

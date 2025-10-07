@@ -2,63 +2,75 @@
 
 # Route 1: Create a new lab
 ###
-POST http://localhost:3000/api/v1/system/lab/add HTTP/1.1
+POST http://localhost:3000/api/v1/lab/add HTTP/1.1
 content-type: application/json
 
 {
-    "labName": "City Diagnostic Center  ",
-    "labId": 112233,
+    "labName": "xxxCity Diagnostic Center  ",
+    "labId": 112278,
     "address": "123 Medical Street, Healthcare City",
-    "contact1": "01723939836",
-    "contact2": "98765432101",
+    "contact1": 10723939836,
+    "contact2": 98765432101,
     "email": "contact@citydiagnostic.com",
-    "zone": "Mymensingh",
-    "subZone":"Bhaluka",
+    "zoneId": "68e3d3b6efbf8e25e1de1c9b",
+    "subZoneId":"68e3ec2815f59bd2be28e936",
     "activeStatus": true
 }
 
 
 # Route 2: Edit lab Data
 ###
-PATCH http://localhost:3000/api/v1/system/lab/edit HTTP/1.1
+PATCH http://localhost:3000/api/v1/lab/edit HTTP/1.1
 content-type: application/json
 
 {
-    "labName": "xCity Diagnostic Center ",
-    "labId": 112233,
+    "_id": "68e54839607459efeb1b026b",
+    "labName": "Bubu Dudu Love Story",
+    "labId": 111111,
     "address": "123 Medical Street, Healthcare City",
-    "contact1": 12345678901,
-    "contact2": 98765432101,
-    "email": "contact@citydiagnostic.com",
-    "zone": "Dhaka",
-    "subZone":"Mohakhali",
+    "contact1": 12345678902,
+    "contact2": 98765432000,
+    "email": "contact@example.com",
+    "zoneId": "68dacb340b6f2cb529c079ca",
+    "subZoneId":"68dacb340b6f2cb529c079cb",
     "activeStatus": true
 }
 
-# Route 3: Get a lab by labId, email, contact
+# Route 3a: Delete (Soft) a lab
+###
+DELETE http://localhost:3000/api/v1/lab/delete HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "68e51ff216e5eeefddac6084"
+}
+
+# Route 3b: Hard delete - completely remove from database
+###
+DELETE http://localhost:3000/api/v1/lab/remove HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "68e535fc43ce568d51829e73"
+}
+
+# Route 4: Get a lab by labId, email, contact
 ###
 GET http://localhost:3000/api/v1/system/lab/search HTTP/1.1
 content-type: application/json
 
 {
-    "field":"labId",
-    "value": 112244
+    "field":"subZoneId",
+    "value": "68dacb340b6f2cb529c079cb"
 }
 
-# Route 4: Find All Labs
+# Route 5: Find All Labs
 ###
 GET http://localhost:3000/api/v1/system/lab/all HTTP/1.1
 content-type: application/json
 
 
-# Route 5: Delete a lab
-###
-DELETE http://localhost:3000/api/v1/system/lab/delete HTTP/1.1
-content-type: application/json
 
-{
-    "labId": 112244
-}
 
 
 

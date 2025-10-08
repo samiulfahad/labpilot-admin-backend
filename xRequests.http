@@ -42,7 +42,7 @@ DELETE http://localhost:3000/api/v1/lab/delete HTTP/1.1
 content-type: application/json
 
 {
-    "_id": "68e51ff216e5eeefddac6084"
+    "_id": "68dacb340b6f2cb529c079ca"
 }
 
 # Route 3b: Hard delete - completely remove from database
@@ -54,9 +54,18 @@ content-type: application/json
     "_id": "68e535fc43ce568d51829e73"
 }
 
-# Route 4: Get a lab by labId, email, contact
+# Route 4: Restore a soft-deleted lab
 ###
-GET http://localhost:3000/api/v1/system/lab/search HTTP/1.1
+PATCH  http://localhost:3000/api/v1/lab/restore HTTP/1.1
+content-type: application/json
+
+{
+    "labId": 112244
+}
+
+# Route 5: Get a lab by labId, email, contact
+###
+GET http://localhost:3000/api/v1/lab/search HTTP/1.1
 content-type: application/json
 
 {
@@ -64,11 +73,10 @@ content-type: application/json
     "value": "68dacb340b6f2cb529c079cb"
 }
 
-# Route 5: Find All Labs
+# Route 6: Find All Labs
 ###
-GET http://localhost:3000/api/v1/system/lab/all HTTP/1.1
+GET http://localhost:3000/api/v1/lab/all HTTP/1.1
 content-type: application/json
-
 
 
 

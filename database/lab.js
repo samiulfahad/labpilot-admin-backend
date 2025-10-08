@@ -203,7 +203,7 @@ class Lab {
 
 
   // Function 10: Restore soft-deleted lab
-  static async restoreLab(labId, systemId) {
+  static async restore(labId, systemId) {
     try {
       const db = getClient();
 
@@ -226,7 +226,7 @@ class Lab {
 
       return result.modifiedCount > 0;
     } catch (e) {
-      return handleError(e, "restoreLab");
+      return handleError(e, "restore");
     }
   }
 

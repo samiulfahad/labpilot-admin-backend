@@ -9,7 +9,7 @@ const postLab = async (req, res, next) => {
     const systemId = req.user?.id || req.user?.systemId || 555; // Fallback for development
     const { labName, labId, address, zoneId, subZoneId, email, contact1, contact2,  } = req.body;
     
-    const lab = new Lab(labName, labId, address, zoneId, subZoneId, contact1.toString(), contact2.toString(), email, , systemId);
+    const lab = new Lab(labName, labId, address, zoneId, subZoneId, contact1, contact2, email, systemId);
     const success = await lab.save();
     
     if (success) {
@@ -108,6 +108,25 @@ const removeLab = async (req, res, next) => {
 };
 
 
+// Restore Lab by Lab ID
+const restoreLab = async (req, res, next) => {
+  try {
+    // Get systemId from authenticated user
+    const systemId = req.user?.id || req.user?.systemId || 999;
+    const { labId } = req.body;
+    
+    const success = await Lab.restore(labId, systemId);
+    if (success) {
+      return res.status(200).send({ success: true, msg: "Lab restored successfully" });
+    } else {
+      return res.status(400).send({ success: false, msg: "Lab not found or reactivation failed" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+
 
 // Get Labs Statistics
 const getLabStats = async (req, res, next) => {
@@ -115,8 +134,8 @@ const getLabStats = async (req, res, next) => {
     const db = getClient();
     
     const totalLabs = await db.collection("labs").countDocuments();
-    const activeLabs = await db.collection("labs").countDocuments({ : true });
-    const inactiveLabs = await db.collection("labs").countDocuments({ : false });
+    const activeLabs = await db.collection("labs").countDocuments({isActive : true });
+    const inactiveLabs = await db.collection("labs").countDocuments({ isActive : false });
     
     // Count labs by zone (you might need to adjust based on your zone structure)
     const labsByZone = await db.collection("labs").aggregate([
@@ -146,5 +165,6 @@ module.exports = {
   patchLab,
   deleteLab,
   removeLab,
+  restoreLab,
   getLabStats
 };

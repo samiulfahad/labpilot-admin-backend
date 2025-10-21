@@ -162,7 +162,7 @@ class Lab {
       else {
         query[field] = value;
       }
-      console.log(query);
+    //  console.log(query);
       const labs = await db.collection("labs").find(query).project(projection).toArray();
       return labs; // ✅ Always return array (empty if no results)
     } catch (e) {
@@ -202,7 +202,7 @@ class Lab {
 
 
 
-  // Function 10: Restore soft-deleted lab
+  // Function 6: Restore soft-deleted lab
   static async restore(labId, systemId) {
     try {
       const db = getClient();

@@ -9,7 +9,7 @@ const validateZoneName = body("zoneName")
     .bail()
     .isString()
     .trim()
-    .isLength({ max: 5 })
+    .isLength({ max: 20 })
     .withMessage("Zone name must not exceed 150 characters.");
 
 // Validate subZoneName
@@ -19,7 +19,7 @@ const validateSubZoneName = body("subZoneName")
     .bail()
     .isString()
     .trim()
-    .isLength({ max: 5 })
+    .isLength({ max: 20 })
     .withMessage("Subzone name must not exceed 150 characters.");
 
 

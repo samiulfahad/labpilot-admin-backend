@@ -1,11 +1,10 @@
 Running Task:
-Task 3: Test Lab Routes, Check validations
-Completed upto line 63 in server.js file... start from below line 63
+Task 4... Waiting for frontend development
 
 
 Tasks to do:
 Task 1 Done: Test Zone Routes
 Task 2 Done: Implement Zone validation Rules
-Task 3: Test Lab Routes
-Task 4: Add getLabsByZone, getLabsBySubZone routes in server.js and implement it
+Task 3 Done: Test Lab Routes
+Task 4: Integrate with frontend
 

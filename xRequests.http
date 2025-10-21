@@ -69,8 +69,8 @@ GET http://localhost:3000/api/v1/lab/search HTTP/1.1
 content-type: application/json
 
 {
-    "field":"subZoneId",
-    "value": "68dacb340b6f2cb529c079cb"
+    "field":"zoneId",
+    "value": "68dacb340b6f2cb529c079ca"
 }
 
 # Route 6: Find All Labs
@@ -90,7 +90,7 @@ POST http://localhost:3000/api/v1/labzone/add HTTP/1.1
 content-type: application/json
 
 {
-    "zoneName": "Chityy"
+    "zoneName": "Chit"
 }
 
 # Route 2: Create a subzone

@@ -5,6 +5,7 @@ const Zone = require("../database/zone");
 // Zone endpoints
 const postZone = async (req, res, next) => {
     try {
+        //console.log('postZone called');
         const systemId = 555;
         const { zoneName } = req.body;
         const zone = new Zone(zoneName, systemId);

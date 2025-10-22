@@ -73,19 +73,19 @@ app.get("/api/v1/lab/all",
 )
 
 // Lab Zone routes
-app.post("/api/v1/labzone/add",
+app.post("/api/v1/zone/add",
     zoneValidationRules, handleValidationErrors,
     zoneController.postZone
 )
-app.patch("/api/v1/labzone/edit",
+app.patch("/api/v1/zone/edit",
     validateMongoId("zoneId", "Zone ID"), zoneValidationRules, handleValidationErrors,
     zoneController.patchZone
 )
-app.delete("/api/v1/labzone/delete",
+app.delete("/api/v1/zone/delete",
     validateMongoId("zoneId", "Zone ID"), handleValidationErrors,
     zoneController.deleteZone
 )
-app.get("/api/v1/labzone/all",
+app.get("/api/v1/zone/all",
     zoneController.getZones
 )
 app.get("/api/v1/labzone/",

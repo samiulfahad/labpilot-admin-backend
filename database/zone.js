@@ -24,7 +24,7 @@ class Zone {
         try {
             const db = getClient();
             const result = await db.collection("labZone").insertOne(this);
-            return result.insertedId ? true : false;
+            return result.insertedId ? result.insertedId : false;
         } catch (e) {
             return handleError(e, "save");
         }

@@ -9,9 +9,10 @@ const postZone = async (req, res, next) => {
         const systemId = 555;
         const { zoneName } = req.body;
         const zone = new Zone(zoneName, systemId);
-        const success = await zone.save();
-        if (success) {
-            return res.status(201).send({ success: true, msg: "Zone created" });
+        const zoneId = await zone.save();
+        if (zoneId) {
+            const newZone = {_id: zoneId, zoneName: req.body.zoneName, subZones: []}
+            return res.status(201).send({ success: true, zone: newZone });
         } else {
             return res.status(400).send({ success: false, msg: "Failed to create zone" });
         }
@@ -54,7 +55,7 @@ const deleteZone = async (req, res, next) => {
 const getZones = async (req, res, next) => {
     try {
         const zones = await Zone.getAllZones();
-        if (zones.length > 0) {
+        if (zones.length >= 0) {
             return res.status(200).send({ success: true, zones });
         } else {
             return res.status(200).send({ success: false, message: "No Zone Found" });

@@ -88,21 +88,21 @@ app.delete("/api/v1/zone/delete",
 app.get("/api/v1/zone/all",
     zoneController.getZones
 )
-app.get("/api/v1/labzone/",
+app.get("/api/v1/zone/",
     validateMongoId("zoneId", "Zone ID"), handleValidationErrors,
     zoneController.getZone
 )
 
 // Lab Sub Zone routes
-app.post("/api/v1/labzone/subzone/add",
+app.post("/api/v1/zone/subzone/add",
     subZoneValidationRules, handleValidationErrors,
     zoneController.postSubZone
 )
-app.put("/api/v1/labzone/subzone/edit",
+app.put("/api/v1/zone/subzone/edit",
     subZoneValidationRules, validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,
     zoneController.putSubZone
 )
-app.delete("/api/v1/labzone/subzone/delete",
+app.delete("/api/v1/zone/subzone/delete",
     validateMongoId("zoneId", "Zone ID"), validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,
     zoneController.deleteSubZone
 )

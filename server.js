@@ -98,9 +98,9 @@ app.post("/api/v1/zone/subzone/add",
     subZoneValidationRules, handleValidationErrors,
     zoneController.postSubZone
 )
-app.put("/api/v1/zone/subzone/edit",
+app.patch("/api/v1/zone/subzone/edit",
     subZoneValidationRules, validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,
-    zoneController.putSubZone
+    zoneController.patchSubZone
 )
 app.delete("/api/v1/zone/subzone/delete",
     validateMongoId("zoneId", "Zone ID"), validateMongoId("subZoneId", "Sub Zone ID"), handleValidationErrors,

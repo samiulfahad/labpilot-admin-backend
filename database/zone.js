@@ -22,8 +22,18 @@ class Zone {
   async save() {
     try {
       const db = getClient();
+
+      // Check if zone name already exists
+      const existingZone = await db.collection("labZone").findOne({
+        zoneName: this.zoneName,
+      });
+
+      if (existingZone) {
+        return { duplicate: true };
+      }
+
       const result = await db.collection("labZone").insertOne(this);
-      return result.insertedId ? result.insertedId : false;
+      return result.insertedId ? { zoneId: result.insertedId } : false;
     } catch (e) {
       return handleError(e, "save");
     }
@@ -33,6 +43,16 @@ class Zone {
   static async updateZoneById(_id, zoneName, systemId) {
     try {
       const db = getClient();
+
+      // Check if zone name already exists (excluding the current zone being updated)
+      const existingZone = await db.collection("labZone").findOne({
+        zoneName: zoneName,
+        _id: { $ne: new ObjectId(_id) }, // Exclude the current zone from the check
+      });
+
+      if (existingZone) {
+        return { duplicate: true };
+      }
 
       const result = await db.collection("labZone").updateOne(
         { _id: new ObjectId(_id) },
@@ -44,7 +64,8 @@ class Zone {
           },
         }
       );
-      return result.modifiedCount > 0;
+
+      return result.modifiedCount > 0 ? { success: true } : { success: false };
     } catch (e) {
       return handleError(e, "updateZone");
     }
@@ -54,6 +75,17 @@ class Zone {
   static async createSubZone(zoneId, subZoneName, systemId) {
     try {
       const db = getClient();
+
+      // Check if subzone name already exists in this zone
+      const existingSubZone = await db.collection("labZone").findOne({
+        _id: new ObjectId(zoneId),
+        "subZones.subZoneName": subZoneName,
+      });
+
+      if (existingSubZone) {
+        return { duplicate: true };
+      }
+
       const subZone = {
         _id: new ObjectId(),
         subZoneName: subZoneName,
@@ -78,14 +110,12 @@ class Zone {
         }
       );
 
-    //   console.log(result.value);
-
       if (!result.value) {
-        throw new Error("Zone not found or update failed");
+        return { success: false };
       }
 
       // Return the updated zone document with the new subzone
-      return result.value;
+      return { success: true, zone: result.value };
     } catch (e) {
       return handleError(e, "createSubZone");
     }
@@ -96,7 +126,22 @@ class Zone {
     try {
       const db = getClient();
 
-      const result = await db.collection("labZone").updateOne(
+      // Check if subzone name already exists in this zone (excluding the current subzone)
+      const existingSubZone = await db.collection("labZone").findOne({
+        _id: new ObjectId(zoneId),
+        subZones: {
+          $elemMatch: {
+            subZoneName: newSubZoneName,
+            _id: { $ne: new ObjectId(subZoneId) },
+          },
+        },
+      });
+
+      if (existingSubZone) {
+        return { duplicate: true };
+      }
+
+      const result = await db.collection("labZone").findOneAndUpdate(
         {
           _id: new ObjectId(zoneId),
           "subZones._id": new ObjectId(subZoneId),
@@ -109,10 +154,19 @@ class Zone {
             updatedAt: new Date(),
             updatedBy: systemId,
           },
+        },
+        {
+          returnDocument: "after", // Returns the updated document
+          includeResultMetadata: true, // Includes operation metadata
         }
       );
 
-      return result.modifiedCount > 0;
+      if (!result.value) {
+        return { success: false, message: "Zone or subzone not found" };
+      }
+
+      // Return the updated zone document with the modified subzone
+      return { success: true, zone: result.value };
     } catch (e) {
       return handleError(e, "updateSubZone");
     }
@@ -129,15 +183,11 @@ class Zone {
       });
 
       if (labsInZone) {
-        throw new Error(
-          "Cannot delete zone: There are labs associated with this zone"
-        );
+        throw new Error("Cannot delete zone: There are labs associated with this zone");
       }
 
       // Delete the zone
-      const result = await db
-        .collection("labZone")
-        .deleteOne({ _id: new ObjectId(zoneId) });
+      const result = await db.collection("labZone").deleteOne({ _id: new ObjectId(zoneId) });
 
       return result.deletedCount > 0;
     } catch (e) {
@@ -181,11 +231,7 @@ class Zone {
         updatedBy: 0,
       };
       const db = getClient();
-      const zones = await db
-        .collection("labZone")
-        .find({})
-        .project(projection)
-        .toArray();
+      const zones = await db.collection("labZone").find({}).project(projection).toArray();
       if (zones && zones.length > 0) {
         return zones;
       } else {

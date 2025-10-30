@@ -46,11 +46,36 @@ class Lab {
       // Check if labId already exists
       const existingLab = await db.collection("labs").findOne({ labId: this.labId });
       if (existingLab) {
-        throw new Error(`Lab with ID ${this.labId} already exists`);
+        return { duplicate: true };
       }
 
       const result = await db.collection("labs").insertOne(this);
-      return result.insertedId ? true : false;
+
+      if (result.insertedId) {
+        // Fetch the inserted lab with projection
+        const projection = {
+          labName: 1,
+          labId: 1,
+          address: 1,
+          email: 1,
+          contact1: 1,
+          contact2: 1,
+          zoneId: 1,
+          subZoneId: 1,
+          isActive: 1,
+          createdAt: 1,
+        };
+
+        const insertedLab = await db.collection("labs").findOne({ _id: result.insertedId }, { projection });
+
+        return {
+          success: true,
+          insertedId: result.insertedId,
+          lab: insertedLab,
+        };
+      } else {
+        return { success: false };
+      }
     } catch (e) {
       return handleError(e, "save");
     }
@@ -65,23 +90,22 @@ class Lab {
       const updateData = { ...newData };
 
       // Convert zoneId and subZoneId to ObjectId if present and valid
-      if (updateData.zoneId && typeof updateData.zoneId === 'string') {
+      if (updateData.zoneId && typeof updateData.zoneId === "string") {
         updateData.zoneId = new ObjectId(updateData.zoneId);
       }
-      if (updateData.subZoneId && typeof updateData.subZoneId === 'string') {
+      if (updateData.subZoneId && typeof updateData.subZoneId === "string") {
         updateData.subZoneId = new ObjectId(updateData.subZoneId);
       }
 
       const updateFields = {
         ...updateData,
         updatedAt: new Date(),
-        updatedBy: systemId
+        updatedBy: systemId,
       };
 
-      const result = await db.collection("labs").updateOne(
-        { _id: new ObjectId(_id), isDeleted: { $ne: true } },
-        { $set: updateFields }
-      );
+      const result = await db
+        .collection("labs")
+        .updateOne({ _id: new ObjectId(_id), isDeleted: { $ne: true } }, { $set: updateFields });
 
       return result.modifiedCount > 0;
     } catch (e) {
@@ -102,8 +126,8 @@ class Lab {
             deletedAt: new Date(),
             deletedBy: systemId,
             updatedAt: new Date(),
-            updatedBy: systemId
-          }
+            updatedBy: systemId,
+          },
         }
       );
 
@@ -117,9 +141,7 @@ class Lab {
     try {
       const db = getClient();
 
-      const result = await db.collection("labs").deleteOne(
-        { _id: new ObjectId(_id) }
-      );
+      const result = await db.collection("labs").deleteOne({ _id: new ObjectId(_id) });
       return result.deletedCount > 0;
     } catch (e) {
       return handleError(e, "removeById");
@@ -140,7 +162,7 @@ class Lab {
         zoneId: 1,
         subZoneId: 1,
         isActive: 1,
-        createdAt: 1
+        createdAt: 1,
       };
 
       const db = getClient();
@@ -148,21 +170,18 @@ class Lab {
       let query = { isDeleted: { $ne: true } };
 
       // Handle ObjectId conversion for specific fields
-      if (field === 'zoneId' || field === 'subZoneId') {
+      if (field === "zoneId" || field === "subZoneId") {
         query[field] = new ObjectId(value);
       }
       // Handle contact search - search both contact1 and contact2 fields
-      else if (field === 'contact') {
-        query.$or = [
-          { contact1: value },
-          { contact2: value }
-        ];
+      else if (field === "contact") {
+        query.$or = [{ contact1: value }, { contact2: value }];
       }
       // Default case for other fields
       else {
         query[field] = value;
       }
-    //  console.log(query);
+      //  console.log(query);
       const labs = await db.collection("labs").find(query).project(projection).toArray();
       return labs; // ✅ Always return array (empty if no results)
     } catch (e) {
@@ -170,12 +189,10 @@ class Lab {
     }
   }
 
-
   // Function 5: Find all labs (non-deleted only)
   static async findAll() {
     try {
       const projection = {
-        _id: 0,
         labName: 1,
         labId: 1,
         address: 1,
@@ -185,11 +202,12 @@ class Lab {
         zoneId: 1,
         subZoneId: 1,
         isActive: 1,
-        createdAt: 1
+        createdAt: 1,
       };
 
       const db = getClient();
-      const labs = await db.collection("labs")
+      const labs = await db
+        .collection("labs")
         .find({ isDeleted: { $ne: true } })
         .project(projection)
         .toArray();
@@ -199,8 +217,6 @@ class Lab {
       return handleError(e, "findAll");
     }
   }
-
-
 
   // Function 6: Restore soft-deleted lab
   static async restore(labId, systemId) {
@@ -215,12 +231,12 @@ class Lab {
             restoredAt: new Date(),
             restoredBy: systemId,
             updatedAt: new Date(),
-            updatedBy: systemId
+            updatedBy: systemId,
           },
           $unset: {
             deletedAt: "",
-            deletedBy: ""
-          }
+            deletedBy: "",
+          },
         }
       );
 
@@ -238,26 +254,26 @@ class Lab {
       const totalLabs = await db.collection("labs").countDocuments({ isDeleted: { $ne: true } });
       const activeLabs = await db.collection("labs").countDocuments({
         isActive: true,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
       });
       const inactiveLabs = await db.collection("labs").countDocuments({
         isActive: false,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
       });
       const deletedLabs = await db.collection("labs").countDocuments({ isDeleted: true });
 
       // Count labs by zone
-      const labsByZone = await db.collection("labs").aggregate([
-        { $match: { isDeleted: { $ne: true } } },
-        { $group: { _id: "$zoneId", count: { $sum: 1 } } }
-      ]).toArray();
+      const labsByZone = await db
+        .collection("labs")
+        .aggregate([{ $match: { isDeleted: { $ne: true } } }, { $group: { _id: "$zoneId", count: { $sum: 1 } } }])
+        .toArray();
 
       return {
         totalLabs,
         activeLabs,
         inactiveLabs,
         deletedLabs,
-        labsByZone
+        labsByZone,
       };
     } catch (e) {
       return handleError(e, "getStats");
@@ -270,7 +286,7 @@ class Lab {
       const db = getClient();
       const existingLab = await db.collection("labs").findOne({
         labId: labId,
-        isDeleted: { $ne: true }
+        isDeleted: { $ne: true },
       });
       return !!existingLab;
     } catch (e) {

@@ -1,101 +1,101 @@
 /** @format */
 const { body } = require("express-validator");
-const { validateMongoId } = require("./mongoId")
+const { validateMongoId } = require("./mongoId");
 
 // Validate labName
 const validateLabName = body("labName")
-    .notEmpty()
-    .withMessage("Lab name is required.")
-    .bail()
-    .isString()
-    .trim()
-    .isLength({ max: 150 })
-    .withMessage("Lab name must not exceed 150 characters.");
+  .notEmpty()
+  .withMessage("Lab name is required.")
+  .bail()
+  .isString()
+  .trim()
+  .isLength({ max: 150 })
+  .withMessage("Lab name must not exceed 150 characters.");
 
 // Validate labId - 6 digit number
 const validateLabId = body("labId")
-    .notEmpty()
-    .withMessage("Lab ID is required.")
-    .bail()
-    .isInt({ min: 100000, max: 999999 })
-    .withMessage("Lab ID must be a 6-digit number.");
+  .notEmpty()
+  .withMessage("Lab ID is required.")
+  .bail()
+  .isInt({ min: 100000, max: 999999 })
+  .withMessage("Lab ID must be a 6-digit number.");
 
 // Validate address
 const validateAddress = body("address")
-    .notEmpty()
-    .withMessage("Lab address is required.")
-    .bail()
-    .isString()
-    .trim()
-    .isLength({ max: 200 })
-    .withMessage("Lab address must not exceed 200 characters.");
+  .notEmpty()
+  .withMessage("Lab address is required.")
+  .bail()
+  .isString()
+  .trim()
+  .isLength({ max: 200 })
+  .withMessage("Lab address must not exceed 200 characters.");
 
 // Contact: required, exactly 11 numeric digits
-const validateContact1 = body('contact1')
-    .customSanitizer(value => (value === null || value === undefined ? '' : value.toString()))
-    .notEmpty()
-    .withMessage('Contact Number is required.')
-    .bail()
-    .isNumeric()
-    .withMessage('Contact must contain only numeric digits.')
-    .bail()
-    .isLength({ min: 11, max: 11 })
-    .withMessage('Contact must contain exactly 11 numeric digits.')
+const validateContact1 = body("contact1")
+  .customSanitizer((value) => (value === null || value === undefined ? "" : value.toString()))
+  .notEmpty()
+  .withMessage("Contact Number is required.")
+  .bail()
+  .isNumeric()
+  .withMessage("Contact must contain only numeric digits.")
+  .bail()
+  .isLength({ min: 11, max: 11 })
+  .withMessage("Contact must contain exactly 11 numeric digits.");
 
 // Contact: optional, but if provided must be exactly 11 numeric digits
-const validateContact2 = body('contact2')
-    .customSanitizer(value => (value === null || value === undefined ? '' : value.toString()))
-    .optional()
-    .isNumeric()
-    .withMessage('Contact must contain only numeric digits.')
-    .bail()
-    .isLength({ min: 11, max: 11 })
-    .withMessage('Contact must contain exactly 11 numeric digits.');
+const validateContact2 = body("contact2")
+  .customSanitizer((value) => (value === null || value === undefined ? "" : value.toString()))
+  .optional()
+  .isNumeric()
+  .withMessage("Contact must contain only numeric digits.")
+  .bail()
+  .isLength({ min: 11, max: 11 })
+  .withMessage("Contact must contain exactly 11 numeric digits.");
 
 // Email: required, must be valid email format
-const validateEmail = body('email')
-    .notEmpty()
-    .withMessage('Email is required.')
-    .bail()
-    .isEmail()
-    .withMessage('Please provide a valid email address.')
-    .normalizeEmail();
+const validateEmail = body("email")
+  .notEmpty()
+  .withMessage("Email is required.")
+  .bail()
+  .isEmail()
+  .withMessage("Please provide a valid email address.")
+  .normalizeEmail();
 
 // Active Status: required, must be boolean
-const validateIsActive = body('isActive')
-    .notEmpty()
-    .withMessage('Active status is required.')
-    .bail()
-    .isBoolean()
-    .withMessage('Active status must be either true or false.');
+const validateIsActive = body("isActive")
+  .notEmpty()
+  .withMessage("Active status is required.")
+  .bail()
+  .isBoolean()
+  .withMessage("Active status must be either true or false.");
 
 // Zone: required, must be a string
-const validateZone = validateMongoId("zoneId", "Zone ID")
+const validateZone = validateMongoId("zoneId", "Zone ID");
 
 // Sub Zone: required, must be a string
-const validateSubZone = validateMongoId("subZoneId", "Subzone ID")
+const validateSubZone = validateMongoId("subZoneId", "Subzone ID");
 
 const labValidationRules = [
-    validateLabName,
-    validateLabId,
-    validateAddress,
-    validateContact1,
-    validateContact2,
-    validateEmail,
-    validateZone,
-    validateSubZone,
-    validateIsActive
+  validateLabName,
+  validateLabId,
+  validateAddress,
+  validateContact1,
+  validateContact2,
+  validateEmail,
+  validateZone,
+  validateSubZone,
+  validateIsActive,
 ];
 
 module.exports = {
-    validateLabName,
-    validateLabId,
-    validateAddress,
-    validateContact1,
-    validateContact2,
-    validateEmail,
-    validateZone,
-    validateSubZone,
-    validateIsActive,
-    labValidationRules
+  validateLabName,
+  validateLabId,
+  validateAddress,
+  validateContact1,
+  validateContact2,
+  validateEmail,
+  validateZone,
+  validateSubZone,
+  validateIsActive,
+  labValidationRules,
 };

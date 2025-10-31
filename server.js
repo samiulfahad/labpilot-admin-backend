@@ -30,9 +30,16 @@ app.get("/", (req, res, next) => {
   res.status(200).send({ success: true, msg: "Admin Server is running" });
 });
 
-// Register a new lab
+// Create a new lab
 app.post("/api/v1/lab/add", labValidationRules, handleValidationErrors, labController.postLab);
-// Edit lab data
+
+// Get lab/s (Search by LabId, email, contact, zoneId, subZoneId)
+app.get("/api/v1/lab/search", searchLabValidationRules, handleValidationErrors, labController.getLab);
+
+// Get all labs
+app.get("/api/v1/lab/all", labController.getAllLabs);
+
+// Update lab data
 app.patch(
   "/api/v1/lab/edit",
   labValidationRules,
@@ -41,17 +48,19 @@ app.patch(
   labController.patchLab
 );
 
-// Delet a lab permanently
+// Delete a lab permanently
 app.delete("/api/v1/lab/delete", validateMongoId("_id", "Lab ID"), handleValidationErrors, labController.deleteLab);
 
-// Search lab (by Lab Id, email, contact, zone id, subzone id)
-app.get("/api/v1/lab/search", searchLabValidationRules, handleValidationErrors, labController.getLab);
-
-// List of all labs
-app.get("/api/v1/lab/all", labController.getAllLabs);
-
-// Lab Zone routes
+// Add a new Zone
 app.post("/api/v1/zone/add", zoneValidationRules, handleValidationErrors, zoneController.postZone);
+
+// Get a zone
+app.get("/api/v1/zone/", validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.getZone);
+
+// Get all zones
+app.get("/api/v1/zone/all", zoneController.getAllZones);
+
+// Update a zone
 app.patch(
   "/api/v1/zone/edit",
   validateMongoId("zoneId", "Zone ID"),
@@ -59,17 +68,19 @@ app.patch(
   handleValidationErrors,
   zoneController.patchZone
 );
+
+// Delete a zone
 app.delete(
   "/api/v1/zone/delete",
   validateMongoId("zoneId", "Zone ID"),
   handleValidationErrors,
   zoneController.deleteZone
 );
-app.get("/api/v1/zone/all", zoneController.getZones);
-app.get("/api/v1/zone/", validateMongoId("zoneId", "Zone ID"), handleValidationErrors, zoneController.getZone);
 
-// Lab Sub Zone routes
+// Create a subzone
 app.post("/api/v1/zone/subzone/add", subZoneValidationRules, handleValidationErrors, zoneController.postSubZone);
+
+// Update a subzone
 app.patch(
   "/api/v1/zone/subzone/edit",
   subZoneValidationRules,
@@ -77,6 +88,8 @@ app.patch(
   handleValidationErrors,
   zoneController.patchSubZone
 );
+
+// Delete a subzone
 app.delete(
   "/api/v1/zone/subzone/delete",
   validateMongoId("zoneId", "Zone ID"),

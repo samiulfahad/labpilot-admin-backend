@@ -2,7 +2,7 @@
 
 const Lab = require("../database/lab");
 
-// Create a new Lab
+// Function 1: Create a new Lab
 const postLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user (from middleware)
@@ -12,6 +12,7 @@ const postLab = async (req, res, next) => {
     const result = await lab.save();
 
     if (result.success) {
+      // console.log(result.lab);
       return res.status(201).send(result.lab);
     } else if (result.duplicate) {
       return res.status(400).send({ duplicate: true });
@@ -23,7 +24,7 @@ const postLab = async (req, res, next) => {
   }
 };
 
-// Lab Search (labId, email, contact, zone, subzone)
+// Function 2: Get a Lab (Search by labId, email, contact, zone, subzone)
 const getLab = async (req, res, next) => {
   try {
     const { field, value } = req.body;
@@ -39,7 +40,7 @@ const getLab = async (req, res, next) => {
   }
 };
 
-// Get All Labs
+// Function 3: Get All Labs
 const getAllLabs = async (req, res, next) => {
   try {
     const labs = await Lab.findAll();
@@ -53,7 +54,7 @@ const getAllLabs = async (req, res, next) => {
   }
 };
 
-// Update Lab by Lab ID
+// Function 4: Update Lab by Lab ID
 const patchLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user
@@ -61,7 +62,7 @@ const patchLab = async (req, res, next) => {
     const { _id, labName, address, zoneId, subZoneId, contact1, contact2, email, isActive } = req.body;
     const newData = { labName, address, zoneId, subZoneId, contact1, contact2, email, isActive };
 
-    const success = await Lab.updateById(_id, newData, systemId);
+    const success = await Lab.update(_id, newData, systemId);
     if (success) {
       return res.status(200).send({ success: true, msg: "Lab updated successfully" });
     } else {
@@ -72,14 +73,14 @@ const patchLab = async (req, res, next) => {
   }
 };
 
-// Delete Lab by Lab ID
+// Function 5: Delete Lab by Lab ID
 const deleteLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user
     const systemId = req.user?.id || req.user?.systemId || 999;
     const { _id } = req.body;
 
-    const success = await Lab.deleteById(_id, systemId);
+    const success = await Lab.delete(_id, systemId);
     if (success) {
       return res.status(200).send({ success: true, msg: "Lab removed permanently" });
     } else {
@@ -92,8 +93,8 @@ const deleteLab = async (req, res, next) => {
 
 module.exports = {
   postLab,
-  patchLab,
-  deleteLab,
   getLab,
   getAllLabs,
+  patchLab,
+  deleteLab,
 };

@@ -143,8 +143,3 @@ content-type: application/json
 GET http://localhost:3000/api/v1/labzone/all HTTP/1.1
 content-type: application/json
 
-
-
-
-
-

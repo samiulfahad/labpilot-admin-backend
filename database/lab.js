@@ -24,7 +24,7 @@ const projection = {
 };
 
 class Lab {
-  constructor(labName, labId, address, zoneId, subZoneId, contact1, contact2, email, isActive, systemId) {
+  constructor(labName, labId, address, contact1, contact2, email, isActive, zoneId, subZoneId, systemId) {
     this.labName = labName;
     this.labId = labId;
     this.address = address;
@@ -50,7 +50,7 @@ class Lab {
     this.updatedAt = new Date();
   }
 
-  // Function 1: Save new lab to database
+  // Function 1: Create a new lab
   async save() {
     try {
       const db = getClient();
@@ -62,10 +62,10 @@ class Lab {
       }
 
       const result = await db.collection("labs").insertOne(this);
-
       if (result.insertedId) {
         // Fetch the inserted lab with projection
         const insertedLab = await db.collection("labs").findOne({ _id: result.insertedId }, { projection });
+        // console.log(insertedLab);
         return {
           success: true,
           insertedId: result.insertedId,
@@ -79,8 +79,45 @@ class Lab {
     }
   }
 
-  // Function 2: Update Lab
-  static async updateById(_id, newData, systemId) {
+  // Function 2: Get a lab (Search  by Lab Id, email, contact, zone id, subzone id)
+  static async find(field, value) {
+    try {
+      const db = getClient();
+      let query = {};
+
+      // Handle ObjectId conversion for specific fields
+      if (field === "zoneId" || field === "subZoneId") {
+        query[field] = new ObjectId(value);
+      }
+      // Handle contact search - search both contact1 and contact2 fields
+      else if (field === "contact") {
+        query.$or = [{ contact1: value }, { contact2: value }];
+      }
+      // Default case for other fields
+      else {
+        query[field] = value;
+      }
+      //  console.log(query);
+      const labs = await db.collection("labs").find(query).project(projection).toArray();
+      return labs; // ✅ Always return array (empty if no results)
+    } catch (e) {
+      return handleError(e, "find");
+    }
+  }
+
+  // Function 3: Get all labs
+  static async findAll() {
+    try {
+      const db = getClient();
+      const labs = await db.collection("labs").find({}).project(projection).toArray();
+      return labs; // ✅ Always return array
+    } catch (e) {
+      return handleError(e, "findAll");
+    }
+  }
+
+  // Function 4: Update a Lab
+  static async update(_id, newData, systemId) {
     try {
       const db = getClient();
 
@@ -109,8 +146,8 @@ class Lab {
     }
   }
 
-  // Function 3: Delete Lab - completely remove from database
-  static async deleteById(_id) {
+  // Function 5: Delete Lab - completely remove from database
+  static async delete(_id) {
     try {
       const db = getClient();
 
@@ -118,43 +155,6 @@ class Lab {
       return result.deletedCount > 0;
     } catch (e) {
       return handleError(e, "deleteById");
-    }
-  }
-
-  // Function 4: Search / Find labs by field (by Lab Id, email, contact, zone id, subzone id)
-  static async find(field, value) {
-    try {
-      const db = getClient();
-      let query = {};
-
-      // Handle ObjectId conversion for specific fields
-      if (field === "zoneId" || field === "subZoneId") {
-        query[field] = new ObjectId(value);
-      }
-      // Handle contact search - search both contact1 and contact2 fields
-      else if (field === "contact") {
-        query.$or = [{ contact1: value }, { contact2: value }];
-      }
-      // Default case for other fields
-      else {
-        query[field] = value;
-      }
-      //  console.log(query);
-      const labs = await db.collection("labs").find(query).project(projection).toArray();
-      return labs; // ✅ Always return array (empty if no results)
-    } catch (e) {
-      return handleError(e, "find");
-    }
-  }
-
-  // Function 5: Find all labs (non-deleted only)
-  static async findAll() {
-    try {
-      const db = getClient();
-      const labs = await db.collection("labs").find({}).project(projection).toArray();
-      return labs; // ✅ Always return array
-    } catch (e) {
-      return handleError(e, "findAll");
     }
   }
 }

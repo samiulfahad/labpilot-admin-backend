@@ -10,7 +10,7 @@ const handleError = (e, methodName) => {
   return null;
 };
 
-class Zone {
+class Test {
   constructor(zoneName, systemId) {
     this.zoneName = zoneName;
     this.subZones = [];
@@ -18,7 +18,7 @@ class Zone {
     this.createdAt = new Date();
   }
 
-  // Function 1: Create a new zone
+  // Function 1: Save new zone to database
   async save() {
     try {
       const db = getClient();
@@ -39,51 +39,8 @@ class Zone {
     }
   }
 
-  // Function 2: Get a zone (with subzones)
-  static async find(_id) {
-    try {
-      const projection = {
-        createdAt: 0,
-        createdBy: 0,
-        updatedAt: 0,
-        updatedBy: 0,
-      };
-      const db = getClient();
-
-      const zone = await db.collection("labZone").findOne(
-        { _id: new ObjectId(_id) },
-        { projection } // ✅ Correct: projection as second parameter
-      );
-
-      return zone || null;
-    } catch (e) {
-      return handleError(e, "getZone"); // ✅ Fixed method name
-    }
-  }
-
-  // Function 3: Get all zones with subzones
-  static async findAll() {
-    try {
-      const projection = {
-        createdAt: 0,
-        createdBy: 0,
-        updatedAt: 0,
-        updatedBy: 0,
-      };
-      const db = getClient();
-      const zones = await db.collection("labZone").find({}).project(projection).toArray();
-      if (zones && zones.length > 0) {
-        return zones;
-      } else {
-        return [];
-      }
-    } catch (e) {
-      return handleError(e, "getAllZones");
-    }
-  }
-
-  // Function 4: Update Zone
-  static async update(_id, zoneName, systemId) {
+  // Function 2: Update Lab Zone name
+  static async updateZoneById(_id, zoneName, systemId) {
     try {
       const db = getClient();
 
@@ -114,30 +71,7 @@ class Zone {
     }
   }
 
-  // Function 5: Delete a zone (and all its subzones)
-  static async delete(zoneId, systemId) {
-    try {
-      const db = getClient();
-
-      // First, check if there are any labs associated with this zone
-      const labsInZone = await db.collection("labs").findOne({
-        zoneId: new ObjectId(zoneId),
-      });
-
-      if (labsInZone) {
-        throw new Error("Cannot delete zone: There are labs associated with this zone");
-      }
-
-      // Delete the zone
-      const result = await db.collection("labZone").deleteOne({ _id: new ObjectId(zoneId) });
-
-      return result.deletedCount > 0;
-    } catch (e) {
-      return handleError(e, "deleteZone");
-    }
-  }
-
-  // Function 6: Create a subzone
+  // Function 3: Create a subzone
   static async createSubZone(zoneId, subZoneName, systemId) {
     try {
       const db = getClient();
@@ -187,7 +121,7 @@ class Zone {
     }
   }
 
-  // Function 7: Update sub zone name
+  // Function 4: Update sub zone name
   static async updateSubZone(zoneId, subZoneId, newSubZoneName, systemId) {
     try {
       const db = getClient();
@@ -238,7 +172,29 @@ class Zone {
     }
   }
 
-  // Function 8: Update sub zone name
+  // Function 5: Delete a zone (and all its subzones)
+  static async deleteZone(zoneId, systemId) {
+    try {
+      const db = getClient();
+
+      // First, check if there are any labs associated with this zone
+      const labsInZone = await db.collection("labs").findOne({
+        zoneId: new ObjectId(zoneId),
+      });
+
+      if (labsInZone) {
+        throw new Error("Cannot delete zone: There are labs associated with this zone");
+      }
+
+      // Delete the zone
+      const result = await db.collection("labZone").deleteOne({ _id: new ObjectId(zoneId) });
+
+      return result.deletedCount > 0;
+    } catch (e) {
+      return handleError(e, "deleteZone");
+    }
+  }
+
   static async deleteSubZone(zoneId, subZoneId, systemId) {
     try {
       const db = getClient();
@@ -264,6 +220,29 @@ class Zone {
       return handleError(e, "deleteSubZone");
     }
   }
+  
+
+  // Function 8: Get a zone with subzones
+  static async getZone(zoneId) {
+    try {
+      const projection = {
+        createdAt: 0,
+        createdBy: 0,
+        updatedAt: 0,
+        updatedBy: 0,
+      };
+      const db = getClient();
+
+      const zone = await db.collection("labZone").findOne(
+        { _id: new ObjectId(zoneId) },
+        { projection } // ✅ Correct: projection as second parameter
+      );
+
+      return zone || null;
+    } catch (e) {
+      return handleError(e, "getZone"); // ✅ Fixed method name
+    }
+  }
 }
 
-module.exports = Zone;
+module.exports = Test;

@@ -1,10 +1,15 @@
 Running Task:
-Task 4... Waiting for frontend development
+Task 5
+Done 1.Create Controller
+2.Create database file
+3.Test the Endpoints
+4.Add validations to the endpoints
 
 
 Tasks to do:
 Task 1 Done: Test Zone Routes
 Task 2 Done: Implement Zone validation Rules
 Task 3 Done: Test Lab Routes
-Task 4: Integrate with frontend
+Task 4 Done: Integrate with frontend
+Task 5: Endpoints for CRUD of Lab Test, Test Category
 

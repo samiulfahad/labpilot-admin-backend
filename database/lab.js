@@ -1,6 +1,6 @@
 /** @format */
 
-const { ObjectId, ClientSession } = require("mongodb");
+const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
 
 const handleError = (e, methodName) => {
@@ -8,6 +8,19 @@ const handleError = (e, methodName) => {
   console.log(`Method Name: ${methodName}`);
   console.log(`Error Message: ${e.message}`);
   return null;
+};
+
+const projection = {
+  labName: 1,
+  labId: 1,
+  address: 1,
+  email: 1,
+  contact1: 1,
+  contact2: 1,
+  zoneId: 1,
+  subZoneId: 1,
+  isActive: 1,
+  createdAt: 1,
 };
 
 class Lab {
@@ -35,7 +48,6 @@ class Lab {
     this.createdBy = systemId;
     this.createdAt = new Date();
     this.updatedAt = new Date();
-    this.isDeleted = false; // For soft delete
   }
 
   // Function 1: Save new lab to database
@@ -53,21 +65,7 @@ class Lab {
 
       if (result.insertedId) {
         // Fetch the inserted lab with projection
-        const projection = {
-          labName: 1,
-          labId: 1,
-          address: 1,
-          email: 1,
-          contact1: 1,
-          contact2: 1,
-          zoneId: 1,
-          subZoneId: 1,
-          isActive: 1,
-          createdAt: 1,
-        };
-
         const insertedLab = await db.collection("labs").findOne({ _id: result.insertedId }, { projection });
-
         return {
           success: true,
           insertedId: result.insertedId,
@@ -88,11 +86,11 @@ class Lab {
 
       // Create a copy of newData to avoid modifying the original
       const updateData = { ...newData };
-
       // Convert zoneId and subZoneId to ObjectId if present and valid
       if (updateData.zoneId && typeof updateData.zoneId === "string") {
         updateData.zoneId = new ObjectId(updateData.zoneId);
       }
+
       if (updateData.subZoneId && typeof updateData.subZoneId === "string") {
         updateData.subZoneId = new ObjectId(updateData.subZoneId);
       }
@@ -103,9 +101,7 @@ class Lab {
         updatedBy: systemId,
       };
 
-      const result = await db
-        .collection("labs")
-        .updateOne({ _id: new ObjectId(_id) }, { $set: updateFields });
+      const result = await db.collection("labs").updateOne({ _id: new ObjectId(_id) }, { $set: updateFields });
 
       return result.modifiedCount > 0;
     } catch (e) {
@@ -113,7 +109,7 @@ class Lab {
     }
   }
 
-  // Function 3: Delete - completely remove from database
+  // Function 3: Delete Lab - completely remove from database
   static async deleteById(_id) {
     try {
       const db = getClient();
@@ -128,23 +124,8 @@ class Lab {
   // Function 4: Search / Find labs by field (by Lab Id, email, contact, zone id, subzone id)
   static async find(field, value) {
     try {
-      const projection = {
-        _id: 0,
-        labName: 1,
-        labId: 1,
-        address: 1,
-        email: 1,
-        contact1: 1,
-        contact2: 1,
-        zoneId: 1,
-        subZoneId: 1,
-        isActive: 1,
-        createdAt: 1,
-      };
-
       const db = getClient();
-
-      let query = { isDeleted: { $ne: true } };
+      let query = {};
 
       // Handle ObjectId conversion for specific fields
       if (field === "zoneId" || field === "subZoneId") {
@@ -169,78 +150,11 @@ class Lab {
   // Function 5: Find all labs (non-deleted only)
   static async findAll() {
     try {
-      const projection = {
-        labName: 1,
-        labId: 1,
-        address: 1,
-        email: 1,
-        contact1: 1,
-        contact2: 1,
-        zoneId: 1,
-        subZoneId: 1,
-        isActive: 1,
-        createdAt: 1,
-      };
-
       const db = getClient();
-      const labs = await db
-        .collection("labs")
-        .find({ isDeleted: { $ne: true } })
-        .project(projection)
-        .toArray();
-
+      const labs = await db.collection("labs").find({}).project(projection).toArray();
       return labs; // ✅ Always return array
     } catch (e) {
       return handleError(e, "findAll");
-    }
-  }
-
-
-  // Function 11: Get lab statistics
-  static async getStats() {
-    try {
-      const db = getClient();
-
-      const totalLabs = await db.collection("labs").countDocuments({ isDeleted: { $ne: true } });
-      const activeLabs = await db.collection("labs").countDocuments({
-        isActive: true,
-        isDeleted: { $ne: true },
-      });
-      const inactiveLabs = await db.collection("labs").countDocuments({
-        isActive: false,
-        isDeleted: { $ne: true },
-      });
-      const deletedLabs = await db.collection("labs").countDocuments({ isDeleted: true });
-
-      // Count labs by zone
-      const labsByZone = await db
-        .collection("labs")
-        .aggregate([{ $match: { isDeleted: { $ne: true } } }, { $group: { _id: "$zoneId", count: { $sum: 1 } } }])
-        .toArray();
-
-      return {
-        totalLabs,
-        activeLabs,
-        inactiveLabs,
-        deletedLabs,
-        labsByZone,
-      };
-    } catch (e) {
-      return handleError(e, "getStats");
-    }
-  }
-
-  // Function 12: Check if labId exists
-  static async labIdExists(labId) {
-    try {
-      const db = getClient();
-      const existingLab = await db.collection("labs").findOne({
-        labId: labId,
-        isDeleted: { $ne: true },
-      });
-      return !!existingLab;
-    } catch (e) {
-      return handleError(e, "labIdExists");
     }
   }
 }

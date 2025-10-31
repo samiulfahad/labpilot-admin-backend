@@ -7,9 +7,8 @@ const postLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user (from middleware)
     const systemId = req.user?.id || req.user?.systemId || 555; // Fallback for development
-    const { labName, labId, address, zoneId, subZoneId, email, isActive, contact1, contact2 } = req.body;
-
-    const lab = new Lab(labName, labId, address, zoneId, subZoneId, contact1, contact2, email, isActive, systemId);
+    const { labName, labId, address, contact1, contact2, email, isActive, zoneId, subZoneId } = req.body;
+    const lab = new Lab(labName, labId, address, contact1, contact2, email, isActive, zoneId, subZoneId, systemId);
     const result = await lab.save();
 
     if (result.success) {
@@ -91,43 +90,10 @@ const deleteLab = async (req, res, next) => {
   }
 };
 
-
-
-// Get Labs Statistics
-const getLabStats = async (req, res, next) => {
-  try {
-    const db = getClient();
-
-    const totalLabs = await db.collection("labs").countDocuments();
-    const activeLabs = await db.collection("labs").countDocuments({ isActive: true });
-    const inactiveLabs = await db.collection("labs").countDocuments({ isActive: false });
-
-    // Count labs by zone (you might need to adjust based on your zone structure)
-    const labsByZone = await db
-      .collection("labs")
-      .aggregate([{ $group: { _id: "$zoneId", count: { $sum: 1 } } }])
-      .toArray();
-
-    return res.status(200).send({
-      success: true,
-      stats: {
-        totalLabs,
-        activeLabs,
-        inactiveLabs,
-        labsByZone,
-      },
-      msg: "Statistics retrieved successfully",
-    });
-  } catch (e) {
-    next(e);
-  }
-};
-
 module.exports = {
   postLab,
-  getLab,
-  getAllLabs,
   patchLab,
   deleteLab,
-  getLabStats,
+  getLab,
+  getAllLabs,
 };

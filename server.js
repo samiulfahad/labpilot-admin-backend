@@ -43,23 +43,13 @@ app.patch("/api/v1/lab/edit",
     labController.patchLab
 )
 
-// Delete (soft) a lab
+
+// Delet a lab permanently
 app.delete("/api/v1/lab/delete",
     validateMongoId("_id", "Lab ID"), handleValidationErrors,
     labController.deleteLab
 )
 
-// Remove or permanently delete a lab
-app.delete("/api/v1/lab/remove",
-    validateMongoId("_id", "Lab ID"), handleValidationErrors,
-    labController.removeLab
-)
-
-// Restore a lab (by Lab Id )
-app.patch("/api/v1/lab/restore",
-    validateLabId, handleValidationErrors,
-    labController.restoreLab
-)
 
 // Search lab (by Lab Id, email, contact, zone id, subzone id)
 app.get("/api/v1/lab/search",

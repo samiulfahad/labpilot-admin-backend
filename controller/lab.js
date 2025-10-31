@@ -24,7 +24,7 @@ const postLab = async (req, res, next) => {
   }
 };
 
-// Get Lab by labId, email, contact, zone, subzone
+// Lab Search (labId, email, contact, zone, subzone)
 const getLab = async (req, res, next) => {
   try {
     const { field, value } = req.body;
@@ -59,8 +59,8 @@ const patchLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user
     const systemId = req.user?.id || req.user?.systemId || 777;
-    const { _id, labName, address, zoneId, subZoneId, contact1, contact2, email } = req.body;
-    const newData = { labName, address, zoneId, subZoneId, contact1, contact2, email };
+    const { _id, labName, address, zoneId, subZoneId, contact1, contact2, email, isActive } = req.body;
+    const newData = { labName, address, zoneId, subZoneId, contact1, contact2, email, isActive };
 
     const success = await Lab.updateById(_id, newData, systemId);
     if (success) {
@@ -82,24 +82,6 @@ const deleteLab = async (req, res, next) => {
 
     const success = await Lab.deleteById(_id, systemId);
     if (success) {
-      return res.status(200).send({ success: true, msg: "Lab deleted successfully" });
-    } else {
-      return res.status(400).send({ success: false, msg: "Lab not found or deletion failed" });
-    }
-  } catch (e) {
-    next(e);
-  }
-};
-
-// Remove or Hard Delete Lab by Lab ID
-const removeLab = async (req, res, next) => {
-  try {
-    // Get systemId from authenticated user
-    const systemId = req.user?.id || req.user?.systemId || 999;
-    const { _id } = req.body;
-
-    const success = await Lab.removeById(_id, systemId);
-    if (success) {
       return res.status(200).send({ success: true, msg: "Lab removed permanently" });
     } else {
       return res.status(400).send({ success: false, msg: "Lab not found or removal failed" });
@@ -109,23 +91,7 @@ const removeLab = async (req, res, next) => {
   }
 };
 
-// Restore Lab by Lab ID
-const restoreLab = async (req, res, next) => {
-  try {
-    // Get systemId from authenticated user
-    const systemId = req.user?.id || req.user?.systemId || 999;
-    const { labId } = req.body;
 
-    const success = await Lab.restore(labId, systemId);
-    if (success) {
-      return res.status(200).send({ success: true, msg: "Lab restored successfully" });
-    } else {
-      return res.status(400).send({ success: false, msg: "Lab not found or reactivation failed" });
-    }
-  } catch (e) {
-    next(e);
-  }
-};
 
 // Get Labs Statistics
 const getLabStats = async (req, res, next) => {
@@ -163,7 +129,5 @@ module.exports = {
   getAllLabs,
   patchLab,
   deleteLab,
-  removeLab,
-  restoreLab,
   getLabStats,
 };

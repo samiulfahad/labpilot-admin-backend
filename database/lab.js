@@ -105,7 +105,7 @@ class Lab {
 
       const result = await db
         .collection("labs")
-        .updateOne({ _id: new ObjectId(_id), isDeleted: { $ne: true } }, { $set: updateFields });
+        .updateOne({ _id: new ObjectId(_id) }, { $set: updateFields });
 
       return result.modifiedCount > 0;
     } catch (e) {
@@ -113,38 +113,15 @@ class Lab {
     }
   }
 
-  // Function 3: Soft delete - mark as deleted without actually removing
-  static async deleteById(_id, systemId) {
-    try {
-      const db = getClient();
-
-      const result = await db.collection("labs").updateOne(
-        { _id: new ObjectId(_id), isDeleted: { $ne: true } },
-        {
-          $set: {
-            isDeleted: true,
-            deletedAt: new Date(),
-            deletedBy: systemId,
-            updatedAt: new Date(),
-            updatedBy: systemId,
-          },
-        }
-      );
-
-      return result.modifiedCount > 0;
-    } catch (e) {
-      return handleError(e, "softDeleteById");
-    }
-  }
-  // Function 3b: Hard delete - completely remove from database
-  static async removeById(_id) {
+  // Function 3: Delete - completely remove from database
+  static async deleteById(_id) {
     try {
       const db = getClient();
 
       const result = await db.collection("labs").deleteOne({ _id: new ObjectId(_id) });
       return result.deletedCount > 0;
     } catch (e) {
-      return handleError(e, "removeById");
+      return handleError(e, "deleteById");
     }
   }
 
@@ -218,33 +195,6 @@ class Lab {
     }
   }
 
-  // Function 6: Restore soft-deleted lab
-  static async restore(labId, systemId) {
-    try {
-      const db = getClient();
-
-      const result = await db.collection("labs").updateOne(
-        { labId: labId, isDeleted: true },
-        {
-          $set: {
-            isDeleted: false,
-            restoredAt: new Date(),
-            restoredBy: systemId,
-            updatedAt: new Date(),
-            updatedBy: systemId,
-          },
-          $unset: {
-            deletedAt: "",
-            deletedBy: "",
-          },
-        }
-      );
-
-      return result.modifiedCount > 0;
-    } catch (e) {
-      return handleError(e, "restore");
-    }
-  }
 
   // Function 11: Get lab statistics
   static async getStats() {

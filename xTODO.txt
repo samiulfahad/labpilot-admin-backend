@@ -1,9 +1,7 @@
 Running Task:
-Task 5
-Done 1.Create Controller
-Done 2.Create database file
-Done 3.Test the Endpoints
-Done 4.Add validations to the endpoints
+Task 6
+
+
 
 
 Tasks to do:
@@ -12,5 +10,6 @@ Task 2 Done: Implement Zone validation Rules
 Task 3 Done: Test Lab Routes
 Task 4 Done: Integrate with frontend
 Task 5 Done: Endpoints for CRUD of Lab Test, Test Category
+Task 6: Implement express router
 Task 6: Endpoints for adding support account, warnings, notes, changing active status in lab account
 Task 7: Endpoints for creating monthly bills

@@ -1,15 +1,15 @@
 Running Task:
-Task 6
+Task 6 Done
 
 
 
 
 Tasks to do:
-Task 1 Done: Test Zone Routes
-Task 2 Done: Implement Zone validation Rules
-Task 3 Done: Test Lab Routes
-Task 4 Done: Integrate with frontend
-Task 5 Done: Endpoints for CRUD of Lab Test, Test Category
-Task 6: Implement express router
-Task 7: Endpoints for adding support account, warnings, notes, changing active status in lab account
 Task 8: Endpoints for creating monthly bills
+Task 7: Endpoints for adding support account, warnings, notes, changing active status in lab account
+Task 6 Done: Implement express router
+Task 5 Done: Endpoints for CRUD of Lab Test, Test Category
+Task 4 Done: Integrate with frontend
+Task 3 Done: Test Lab Routes
+Task 2 Done: Implement Zone validation Rules
+Task 1 Done: Test Zone Routes

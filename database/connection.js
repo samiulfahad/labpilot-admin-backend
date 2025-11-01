@@ -1,13 +1,14 @@
 const { MongoClient } = require("mongodb")
 
-const url = "mongodb://127.0.0.1:27017"
+const localUrl = "mongodb://127.0.0.1:27017"
+const cloudUrl = "mongodb+srv://dbAdmin:dbAdminPass@labpilot.heko8il.mongodb.net/?appName=LabPilot"
 const dbName = "labpilot"
 
 let client = null
 async function connect() {
   try {
     if (!client) {
-      client = new MongoClient(url, {
+      client = new MongoClient(cloudUrl, {
         connectTimeoutMS: 10000,
         minPoolSize: 5,
         maxPoolSize: 100,

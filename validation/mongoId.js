@@ -9,4 +9,11 @@ const validateMongoId = (field, fieldName = "ID") => {
         .withMessage(`Invalid ${fieldName}`);
 };
 
-module.exports = { validateMongoId }
+const validateMongoIdIfProvided = (field, fieldName = "ID") => {
+    return body(field)
+        .optional()
+        .isMongoId()
+        .withMessage(`Invalid ${fieldName}`);
+};
+
+module.exports = { validateMongoId, validateMongoIdIfProvided }

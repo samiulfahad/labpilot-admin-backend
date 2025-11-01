@@ -143,3 +143,92 @@ content-type: application/json
 GET http://localhost:3000/api/v1/labzone/all HTTP/1.1
 content-type: application/json
 
+
+
+
+##################### Test Category  ####################### 
+
+# Route 1: Create a new category
+### 
+POST http://localhost:3000/api/v1/category/add HTTP/1.1
+content-type: application/json
+
+{
+    "categoryName": "CAT-B"
+}
+
+# Route 2: Find All Categories
+###
+GET http://localhost:3000/api/v1/category/all HTTP/1.1
+content-type: application/json
+
+# Route 3: Edit category
+###
+PATCH http://localhost:3000/api/v1/category/edit HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "69062205164deaa7150948cc",
+    "categoryName": "Cat-C"
+}
+
+# Route 4: Delete a category
+###
+DELETE http://localhost:3000/api/v1/category/delete HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "69062205164deaa7150948cc"
+}
+
+
+
+
+
+
+
+##################### Test  ####################### 
+
+# Route 1: Create a new test
+### 
+POST http://localhost:3000/api/v1/test/add HTTP/1.1
+content-type: application/json
+
+{
+    "testName": "RTGS",
+    "categoryId": "6905c79c9a90d1241688d511",
+    "isOnline": "true"
+}
+
+# Route 2: Find All tests
+###
+GET http://localhost:3000/api/v1/test/all HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId" : "6905c79c9a90d1241688d510"
+}
+
+
+# Route 3: Edit test
+###
+PATCH http://localhost:3000/api/v1/test/edit HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "69061b1227241016fb566cfb",
+    "testName": "RTGS Updated",
+    "categoryId": "6905c79c9a90d1241688d511",
+    "isOnline": "true"
+}
+
+# Route 4: Delete test
+###
+DELETE http://localhost:3000/api/v1/test/delete HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "6905ee17a102418f341c7c9a"
+}
+
+

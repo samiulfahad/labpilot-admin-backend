@@ -7,12 +7,16 @@ const { connect } = require("./database/connection");
 // Controller
 const labController = require("./controller/lab");
 const zoneController = require("./controller/zone");
+const catController = require("./controller/category");
+const testController = require("./controller/test");
 
 // Data validation Rules
 const { labValidationRules, validateLabId } = require("./validation/lab");
 const { searchLabValidationRules } = require("./validation/searchLab");
 const { subZoneValidationRules, zoneValidationRules } = require("./validation/zone");
-const { validateMongoId } = require("./validation/mongoId");
+const { validatePOSTTest, validatePATCHTest } = require("./validation/test");
+const { validatePOSTCat, validatePATCHCat } = require("./validation/category");
+const { validateMongoId, validateMongoIdIfProvided } = require("./validation/mongoId");
 const handleValidationErrors = require("./validation/handleValidationErrors");
 
 const app = express();
@@ -97,6 +101,40 @@ app.delete(
   handleValidationErrors,
   zoneController.deleteSubZone
 );
+
+// Add a category
+app.post("/api/v1/category/add", validatePOSTCat, handleValidationErrors, catController.postCategory);
+
+// Get all categories
+app.get("/api/v1/category/all", catController.getAllCategories);
+
+// Edit a category
+app.patch("/api/v1/category/edit", validatePATCHCat, handleValidationErrors, catController.patchCategory);
+
+// Delete a category
+app.delete(
+  "/api/v1/category/delete",
+  validateMongoId("_id", "Category ID"),
+  handleValidationErrors,
+  catController.deleteCategory
+);
+
+// Create a new test
+app.post("/api/v1/test/add", validatePOSTTest, handleValidationErrors, testController.postTest);
+
+// Get all tests
+app.get(
+  "/api/v1/test/all",
+  validateMongoIdIfProvided("categoryId", "Category ID"),
+  handleValidationErrors,
+  testController.getAllTests
+);
+
+// Update a test
+app.patch("/api/v1/test/edit", validatePATCHTest, handleValidationErrors, testController.patchTest);
+
+// Delete a test
+app.delete("/api/v1/test/delete", validateMongoId("_id", "Test ID"), handleValidationErrors, testController.deleteTest);
 
 // 404 Not Found Handler
 app.use((req, res, next) => {

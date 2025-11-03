@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
   console.log("######## Central Error Handler #########");
   console.log(error.message);
-  res.status(500).send({ success: false, message: error.message });
+  res.status(500).send({ success: false, message: "Something Went Wrong" });
 });
 
 // Start the Server

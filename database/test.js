@@ -92,7 +92,7 @@ class Test {
     try {
       const db = getClient();
 
-      // Check if zone name already exists (excluding the current zone being updated)
+      // Check if category name already exists (excluding the current category being updated)
       const existing = await db.collection("tests").findOne({
         categoryName: categoryName,
         _id: { $ne: new ObjectId(_id) }, // Exclude the current category from the check
@@ -137,7 +137,7 @@ class Test {
     try {
       const db = getClient();
 
-      // Check if subzone name already exists in this zone
+      // Check if test name already exists in this category
       const existing = await db.collection("tests").findOne({
         _id: new ObjectId(categoryId),
         "tests.testName": testName,
@@ -188,7 +188,7 @@ class Test {
     try {
       const db = getClient();
 
-      // Check if subzone name already exists in this zone (excluding the current subzone)
+      // Check if test name already exists in this category (excluding the current test)
       const existing = await db.collection("tests").findOne({
         _id: new ObjectId(categoryId),
         tests: {
@@ -212,8 +212,8 @@ class Test {
           $set: {
             "tests.$.testName": newTestName,
             "tests.$.isOnline": isOnline,
-            "subZones.$.updatedAt": new Date(),
-            "subZones.$.updatedBy": systemId,
+            "tests.$.updatedAt": new Date(),
+            "tests.$.updatedBy": systemId,
             updatedAt: new Date(),
             updatedBy: systemId,
           },
@@ -240,11 +240,11 @@ class Test {
     try {
       const db = getClient();
 
-      // Remove the subzone
+      // Remove the test
       const result = await db.collection("tests").updateOne(
         {
           _id: new ObjectId(categoryId),
-          "tests._id": new ObjectId(testId), // Added subzone existence check
+          "tests._id": new ObjectId(testId), // Added test existence check
         },
         {
           $pull: {
@@ -258,7 +258,7 @@ class Test {
       );
       return result.modifiedCount > 0 ? { success: true } : { success: false };
     } catch (e) {
-      return handleError(e, "deleteSubZone");
+      return handleError(e, "deleteTest");
     }
   }
 }

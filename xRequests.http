@@ -159,7 +159,7 @@ POST http://localhost:3000/api/v1/test/category/add HTTP/1.1
 content-type: application/json
 
 {
-    "categoryName": "Blood"
+    "categoryName": "Urine"
 }
 
 # Route 2: Get a category with associated tests
@@ -168,7 +168,7 @@ GET http://localhost:3000/api/v1/test/category HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId" : "6908d13ae37874c9c2c47eda"
+    "categoryId" : "6908f7046cefa0d6c1602163"
 }
 
 # Route 3: Get all categories with associated tests
@@ -183,8 +183,8 @@ PATCH http://localhost:3000/api/v1/test/category/edit HTTP/1.1
 content-type: application/json
 
 {
-    "categoryName": "Hormone",
-    "categoryId": "6908d102e37874c9c2c47ed9"
+    "categoryName": "urine",
+    "categoryId": "6908f7046cefa0d6c1602163"
 }
 
 # Route 5: Delete category
@@ -193,7 +193,7 @@ DELETE http://localhost:3000/api/v1/test/category/delete HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId": "6908d102e37874c9c2c47ed9"
+    "categoryId": "6908f6be0f340708b2671d49"
 }
 
 # Route 6: Create Test
@@ -202,9 +202,9 @@ POST http://localhost:3000/api/v1/test/add HTTP/1.1
 content-type: application/json
 
 {
-    "testName": "T24",
-    "isOnline": true,
-    "categoryId":"6908bebb5d233a47ac08c795"
+    "categoryId":"6908f7046cefa0d6c1602163",
+    "testName": "Test 2",
+    "isOnline": false
 }
 
 
@@ -215,10 +215,10 @@ PATCH http://localhost:3000/api/v1/test/edit HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId": "6908bebb5d233a47ac08c795",
-    "testId" : "6908c7c02f72674f4a92e9f5",
-    "testName": "RBS-2",
-    "isOnline": true
+    "categoryId": "6908ee178fdfb3850b1f71b5",
+    "testId" : "6908f443cda96110c6acab54",
+    "testName": "Xxxx",
+    "isOnline": false
 }
 
 
@@ -228,7 +228,7 @@ DELETE http://localhost:3000/api/v1/test/delete HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId": "69027069cdbb7e893bc378c7",
-    "testId": "69062c52890a4e5f74a59092"
+    "categoryId": "6908ee178fdfb3850b1f71b5",
+    "testId": "6908ee858fdfb3850b1f71b8"
 
 }

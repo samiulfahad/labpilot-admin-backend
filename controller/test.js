@@ -125,13 +125,13 @@ const deleteTest = async (req, res, next) => {
   try {
     const systemId = 555;
     const { categoryId, testId } = req.body;
-    const success = await Test.deleteTest(categoryId, testId, systemId);
-    if (success) {
+    const result = await Test.deleteTest(categoryId, testId, systemId);
+    if (result.success) {
       return res.status(200).send({ success: true, msg: "Test deleted" });
     } else {
       return res.status(400).send({
         success: false,
-        msg: "Subzone not found or has associated labs",
+        msg: "Test not found or was not deleted",
       });
     }
   } catch (e) {

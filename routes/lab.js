@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const labController = require("../controller/lab");
-const { labValidationRules, validateLabId } = require("../validation/lab");
+const { labValidationRules } = require("../validation/lab");
 const { searchLabValidationRules } = require("../validation/searchLab");
 const { validateMongoId } = require("../validation/mongoId");
 const handleValidationErrors = require("../validation/handleValidationErrors");

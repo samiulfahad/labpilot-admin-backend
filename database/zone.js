@@ -24,7 +24,7 @@ class Zone {
       const db = getClient();
 
       // Check if zone name already exists
-      const existingZone = await db.collection("zone").findOne({
+      const existingZone = await db.collection("zones").findOne({
         zoneName: this.zoneName,
       });
 
@@ -32,7 +32,7 @@ class Zone {
         return { duplicate: true };
       }
 
-      const result = await db.collection("zone").insertOne(this);
+      const result = await db.collection("zones").insertOne(this);
       return result.insertedId ? { zoneId: result.insertedId } : false;
     } catch (e) {
       return handleError(e, "save");
@@ -50,7 +50,7 @@ class Zone {
       };
       const db = getClient();
 
-      const zone = await db.collection("zone").findOne(
+      const zone = await db.collection("zones").findOne(
         { _id: new ObjectId(_id) },
         { projection } // ✅ Correct: projection as second parameter
       );
@@ -71,7 +71,7 @@ class Zone {
         updatedBy: 0,
       };
       const db = getClient();
-      const zones = await db.collection("zone").find({}).project(projection).toArray();
+      const zones = await db.collection("zones").find({}).project(projection).toArray();
       if (zones && zones.length > 0) {
         return zones;
       } else {
@@ -88,7 +88,7 @@ class Zone {
       const db = getClient();
 
       // Check if zone name already exists (excluding the current zone being updated)
-      const existingZone = await db.collection("zone").findOne({
+      const existingZone = await db.collection("zones").findOne({
         zoneName: zoneName,
         _id: { $ne: new ObjectId(_id) }, // Exclude the current zone from the check
       });
@@ -97,7 +97,7 @@ class Zone {
         return { duplicate: true };
       }
 
-      const result = await db.collection("zone").updateOne(
+      const result = await db.collection("zones").updateOne(
         { _id: new ObjectId(_id) },
         {
           $set: {
@@ -129,7 +129,7 @@ class Zone {
       }
 
       // Delete the zone
-      const result = await db.collection("zone").deleteOne({ _id: new ObjectId(zoneId) });
+      const result = await db.collection("zones").deleteOne({ _id: new ObjectId(zoneId) });
 
       return result.deletedCount > 0;
     } catch (e) {
@@ -143,7 +143,7 @@ class Zone {
       const db = getClient();
 
       // Check if subzone name already exists in this zone
-      const existingSubZone = await db.collection("zone").findOne({
+      const existingSubZone = await db.collection("zones").findOne({
         _id: new ObjectId(zoneId),
         "subZones.subZoneName": subZoneName,
       });
@@ -159,7 +159,7 @@ class Zone {
         createdBy: systemId,
       };
 
-      const result = await db.collection("zone").findOneAndUpdate(
+      const result = await db.collection("zones").findOneAndUpdate(
         { _id: new ObjectId(zoneId) },
         {
           $push: {
@@ -193,7 +193,7 @@ class Zone {
       const db = getClient();
 
       // Check if subzone name already exists in this zone (excluding the current subzone)
-      const existingSubZone = await db.collection("zone").findOne({
+      const existingSubZone = await db.collection("zones").findOne({
         _id: new ObjectId(zoneId),
         subZones: {
           $elemMatch: {
@@ -207,7 +207,7 @@ class Zone {
         return { duplicate: true };
       }
 
-      const result = await db.collection("zone").findOneAndUpdate(
+      const result = await db.collection("zones").findOneAndUpdate(
         {
           _id: new ObjectId(zoneId),
           "subZones._id": new ObjectId(subZoneId),
@@ -244,7 +244,7 @@ class Zone {
       const db = getClient();
 
       // Remove the subzone
-      const result = await db.collection("zone").updateOne(
+      const result = await db.collection("zones").updateOne(
         {
           _id: new ObjectId(zoneId),
           "subZones._id": new ObjectId(subZoneId), // Added subzone existence check

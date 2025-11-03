@@ -7,8 +7,9 @@ const { connect } = require("./database/connection");
 // Import routers
 const labRouter = require("./routes/lab");
 const zoneRouter = require("./routes/zone");
-const categoryRouter = require("./routes/category");
 const testRouter = require("./routes/test");
+
+// const categoryRouter = require("./routes/category");
 
 const app = express();
 
@@ -29,7 +30,7 @@ app.get("/", (req, res, next) => {
 // Use routers
 app.use("/api/v1/lab", labRouter);
 app.use("/api/v1/zone", zoneRouter);
-app.use("/api/v1/category", categoryRouter);
+// app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/test", testRouter);
 
 // 404 Not Found Handler

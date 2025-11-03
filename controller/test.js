@@ -1,67 +1,138 @@
+/** @format */
+
 const Test = require("../database/test");
 
-// Function 1: Create a test
+// Function 1: Create a Test Category
+const postCategory = async (req, res, next) => {
+  try {
+    //console.log('postTestCategory called');
+    const systemId = 555;
+    const { categoryName } = req.body;
+    const result = await Test.createCategory(categoryName, systemId);
+    if (result?.success) {
+      return res.status(201).send({ _id: result.categoryId, categoryName: req.body.categoryName, tests: [] });
+    } else if (result.duplicate) {
+      return res.status(400).send({ duplicate: true });
+    } else {
+      return res.status(400).send({ success: false, msg: "Failed to create category" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Function 2: Get a category (with testlist)
+const getTestsByCategory = async (req, res, next) => {
+  try {
+    const _id = req.body.categoryId;
+    const result = await Test.findTestsByCategoryId(_id);
+    if (result?.success) {
+      return res.status(200).send(result.category);
+    } else {
+      return res.status(200).send({ success: false });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Function 3: Get all categories (with tests)
+const getAllTestsWithCategories = async (req, res, next) => {
+  try {
+    const result = await Test.findAllCategories();
+    if (result.success) {
+      return res.status(200).send(result.categories);
+    } else {
+      return res.status(200).send({ success: false });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Function 4: Update a category name
+const patchCategory = async (req, res, next) => {
+  try {
+    const systemId = 555;
+    const { categoryId, categoryName } = req.body;
+    const result = await Test.updateCategory(categoryId, categoryName, systemId);
+    if (result.success) {
+      return res.status(200).send({ success: true, msg: "Category Updated" });
+    } else if (result.duplicate) {
+      return res.status(400).send({ duplicate: true });
+    } else {
+      return res.status(400).send({ success: false, msg: "Category Not Updated" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Function 5: Delete a zone (with its subzones)
+const deleteCategory = async (req, res, next) => {
+  try {
+    const systemId = 555;
+    const _id = req.body.categoryId;
+    const result = await Test.deleteCategory(_id, systemId);
+    if (result.success) {
+      return res.status(200).send({ success: true, msg: "Category deleted" });
+    } else {
+      return res.status(400).send({ success: false, msg: "Category not found" });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+// Function 6: Create a test
 const postTest = async (req, res, next) => {
   try {
     const systemId = 555;
-    const { testName, categoryId, isOnline } = req.body;
-    const test = new Test(testName, categoryId, isOnline, systemId);
-    const result = await test.save();
-    if (result?.success) {
-      res.status(201).send(result.test);
-    } else if (result?.duplicate) {
-      res.status(400).send({ duplicate: true });
+    const { categoryId, testName, isOnline } = req.body;
+    const result = await Test.createTest(categoryId, testName, isOnline, systemId);
+    if (result.success) {
+      return res.status(201).send(result.test);
+    } else if (result.duplicate) {
+      return res.status(400).send({ duplicate: true });
     } else {
-      res.status(400).send({ success: false });
+      return res.status(400).send({ success: false, msg: "Test was not created" });
     }
   } catch (e) {
     next(e);
   }
 };
 
-// Function 2: Get All Tests
-const getAllTests = async (req, res, next) => {
-  try {
-    let categoryId = null;
-    if (req.body?.categoryId) categoryId = req.body.categoryId;
-    const result = await Test.findAll(categoryId);
-    if (result?.success) {
-      res.status(201).send(result.tests);
-    } else {
-      res.status(400).send({ success: false });
-    }
-  } catch (e) {
-    next(e);
-  }
-};
-
-// Function 3: Update test
+// Function 7: Update a test
 const patchTest = async (req, res, next) => {
   try {
     const systemId = 555;
-    const { _id, testName, categoryId, isOnline } = req.body;
-    const result = await Test.update(_id, testName, categoryId, isOnline, systemId);
+    const { categoryId, testId, testName, isOnline } = req.body;
+    const result = await Test.updateTest(categoryId, testId, testName, isOnline, systemId);
     if (result.success) {
-      res.status(201).send(result.test);
+      return res.status(200).send(result.test);
     } else if (result.duplicate) {
-      res.status(400).send({ duplicate: true });
+      return res.status(400).send({ duplicate: true });
     } else {
-      res.status(400).send({ success: false });
+      return res.status(400).send({ success: false, msg: "Test not found" });
     }
   } catch (e) {
     next(e);
   }
 };
 
-// Function 4: Delete test
+// Function 8: Delete a test
 const deleteTest = async (req, res, next) => {
   try {
-    const { _id } = req.body;
-    const result = await Test.delete(_id);
-    if (result?.success) {
-      res.status(201).send({ success: true, message: "Test Deleted" });
+    const systemId = 555;
+    const { categoryId, testId } = req.body;
+    const success = await Test.deleteTest(categoryId, testId, systemId);
+    if (success) {
+      return res.status(200).send({ success: true, msg: "Test deleted" });
     } else {
-      res.status(400).send({ success: false });
+      return res.status(400).send({
+        success: false,
+        msg: "Subzone not found or has associated labs",
+      });
     }
   } catch (e) {
     next(e);
@@ -69,8 +140,15 @@ const deleteTest = async (req, res, next) => {
 };
 
 module.exports = {
+  // Category endpoints
+  postCategory,
+  getTestsByCategory,
+  getAllTestsWithCategories,
+  patchCategory,
+  deleteCategory,
+
+  // Test endpoints
   postTest,
-  getAllTests,
   patchTest,
   deleteTest,
 };

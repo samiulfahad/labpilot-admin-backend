@@ -9,142 +9,256 @@ const handleError = (e, methodName) => {
   console.log(`Error Message: ${e.message}`);
   return null;
 };
-const projection = {
-  testName: 1,
-  categoryId: 1,
-};
 
 class Test {
-  constructor(testName, categoryId, isOnline, systemId) {
-    this.testName = testName;
-    this.categoryId = new ObjectId(categoryId);
-    this.isOnline = isOnline;
+  constructor(categoryName, systemId) {
+    this.categoryName = categoryName;
+    this.tests = [];
     this.createdBy = systemId;
     this.createdAt = new Date();
   }
 
-  // CREATE: Create a new test
-  async save() {
+  static async createCategory(categoryName, systemId) {
+    const category = {
+      categoryName: categoryName,
+      tests: [],
+      createdBy: systemId,
+      createdAt: new Date(),
+    };
     try {
       const db = getClient();
 
+      // Check if category name already exists
       const existing = await db.collection("tests").findOne({
-        testName: this.testName,
+        categoryName: categoryName,
       });
 
       if (existing) {
-        return { success: false, duplicate: true };
+        return { duplicate: true };
       }
-      const validCat = await db.collection("testCategories").findOne({
-        _id: new ObjectId(this.categoryId),
-      });
 
-      if (!validCat) {
-        // console.log("No Category was found angaist categoryId");
-        return { success: false };
-      }
-      const result = await db.collection("tests").insertOne(this);
+      const result = await db.collection("tests").insertOne(category);
+      return result.insertedId ? { success: true, categoryId: result.insertedId } : false;
+    } catch (e) {
+      return handleError(e, "createCategory");
+    }
+  }
 
-      if (result.insertedId) {
-        const insertedTest = await db.collection("tests").findOne({ _id: result.insertedId }, { projection });
+  // Function 2: Get a category (with testlist)
+  static async findTestsByCategoryId(_id) {
+    try {
+      const projection = {
+        createdAt: 0,
+        createdBy: 0,
+        updatedAt: 0,
+        updatedBy: 0,
+      };
+      const db = getClient();
 
-        return {
-          success: true,
-          insertedId: result.insertedId,
-          test: insertedTest,
-        };
+      const category = await db.collection("tests").findOne(
+        { _id: new ObjectId(_id) },
+        { projection } // ✅ Correct: projection as second parameter
+      );
+
+      return category ? { success: true, category } : { success: false };
+    } catch (e) {
+      return handleError(e, "findCategory"); // ✅ Fixed method name
+    }
+  }
+
+  // Function 3: Get all categories with tests
+  static async findAllCategories() {
+    try {
+      const projection = {
+        createdAt: 0,
+        createdBy: 0,
+        updatedAt: 0,
+        updatedBy: 0,
+      };
+      const db = getClient();
+      const categories = await db.collection("tests").find({}).project(projection).toArray();
+      if (categories && categories.length >= 0) {
+        return { success: true, categories };
       } else {
         return { success: false };
       }
     } catch (e) {
-      return handleError(e, "save");
+      return handleError(e, "findAllCategories");
     }
   }
 
-  // READ: Get all tests
-  static async findAll(categoryId = null) {
+  // Function 4: Update Category
+  static async updateCategory(_id, categoryName, systemId) {
     try {
       const db = getClient();
 
-      const filter = {};
-      if (categoryId) {
-        filter.categoryId = new ObjectId(categoryId);
-      }
-
-      const tests = await db.collection("tests").find(filter).project(projection).sort({ testName: 1 }).toArray();
-      // console.log(tests);
-      return { success: true, tests };
-    } catch (e) {
-      return handleError(e, "findAll");
-    }
-  }
-
-  // UPDATE: Update a test
-  static async update(_id, newTestName, categoryId, isOnline, systemId) {
-    try {
-      const db = getClient();
-
-      const objectId = new ObjectId(_id);
-      const categoryObjectId = new ObjectId(categoryId);
-
+      // Check if zone name already exists (excluding the current zone being updated)
       const existing = await db.collection("tests").findOne({
-        testName: newTestName,
-        _id: { $ne: objectId },
+        categoryName: categoryName,
+        _id: { $ne: new ObjectId(_id) }, // Exclude the current category from the check
       });
 
       if (existing) {
-        return { success: false, duplicate: true };
+        return { duplicate: true };
       }
 
-      const validCat = await db.collection("testCategories").findOne({
-        _id: categoryObjectId,
+      const result = await db.collection("tests").updateOne(
+        { _id: new ObjectId(_id) },
+        {
+          $set: {
+            categoryName: categoryName,
+            updatedBy: systemId,
+            updatedAt: new Date(),
+          },
+        }
+      );
+
+      return result.modifiedCount > 0 ? { success: true } : { success: false };
+    } catch (e) {
+      return handleError(e, "updateCategory");
+    }
+  }
+
+  // Function 5: Delete a category (and all its tests)
+  static async deleteCategory(_id) {
+    try {
+      const db = getClient();
+
+      const result = await db.collection("tests").deleteOne({ _id: new ObjectId(_id) });
+
+      return result.deletedCount > 0 ? { success: true } : { success: false };
+    } catch (e) {
+      return handleError(e, "deleteCategory");
+    }
+  }
+
+  // Function 6: Create a test
+  static async createTest(categoryId, testName, isOnline, systemId) {
+    try {
+      const db = getClient();
+
+      // Check if subzone name already exists in this zone
+      const existing = await db.collection("tests").findOne({
+        _id: new ObjectId(categoryId),
+        "tests.testName": testName,
       });
 
-      if (!validCat) {
-        console.log("No Category was found angaist categoryId");
-        return { success: false };
+      if (existing) {
+        return { duplicate: true };
       }
 
-      const updateFields = {
-        testName: newTestName,
-        categoryId: categoryObjectId,
+      const test = {
+        _id: new ObjectId(),
+        testName: testName,
         isOnline: isOnline,
-        updatedBy: systemId,
-        updatedAt: new Date(),
+        createdAt: new Date(),
+        createdBy: systemId,
       };
 
-      const result = await db.collection("tests").updateOne({ _id: objectId }, { $set: updateFields });
-      // console.log(result);
-      if (result.modifiedCount > 0) {
-        const updatedTest = await db.collection("tests").findOne({ _id: objectId }, { projection });
+      const result = await db.collection("tests").findOneAndUpdate(
+        { _id: new ObjectId(categoryId) },
+        {
+          $push: {
+            tests: test,
+          },
+          $set: {
+            updatedAt: new Date(),
+            updatedBy: systemId,
+          },
+        },
+        {
+          returnDocument: "after", // Returns the updated document
+          includeResultMetadata: true, // Includes operation metadata
+        }
+      );
 
-        return {
-          success: true,
-          test: updatedTest,
-        };
-      } else {
+      if (!result.value) {
         return { success: false };
       }
+
+      // Return the updated category document with the new tests
+      return { success: true, test: result.value };
     } catch (e) {
-      return handleError(e, "update");
+      return handleError(e, "createTest");
     }
   }
 
-  // DELETE: Delete a test
-  static async delete(_id) {
+  // Function 7: Update test
+  static async updateTest(categoryId, testId, newTestName, isOnline, systemId) {
     try {
       const db = getClient();
-      const objectId = new ObjectId(_id);
 
-      const result = await db.collection("tests").deleteOne({ _id: objectId });
+      // Check if subzone name already exists in this zone (excluding the current subzone)
+      const existing = await db.collection("tests").findOne({
+        _id: new ObjectId(categoryId),
+        tests: {
+          $elemMatch: {
+            testName: newTestName,
+            _id: { $ne: new ObjectId(testId) },
+          },
+        },
+      });
 
-      if (result.deletedCount > 0) {
-        return { success: true };
-      } else {
-        return { success: false };
+      if (existing) {
+        return { duplicate: true };
       }
+
+      const result = await db.collection("tests").findOneAndUpdate(
+        {
+          _id: new ObjectId(categoryId),
+          "tests._id": new ObjectId(testId),
+        },
+        {
+          $set: {
+            "tests.$.testName": newTestName,
+            "tests.$.isOnline": isOnline,
+            "subZones.$.updatedAt": new Date(),
+            "subZones.$.updatedBy": systemId,
+            updatedAt: new Date(),
+            updatedBy: systemId,
+          },
+        },
+        {
+          returnDocument: "after", // Returns the updated document
+          includeResultMetadata: true, // Includes operation metadata
+        }
+      );
+
+      if (!result.value) {
+        return { success: false, message: "Category/Test not found" };
+      }
+
+      // Return the updated category document with the modified tests
+      return { success: true, test: result.value };
     } catch (e) {
-      return handleError(e, "delete");
+      return handleError(e, "updateTest");
+    }
+  }
+
+  // Function 8: Delete Test
+  static async deleteTest(categoryId, testId, systemId) {
+    try {
+      const db = getClient();
+
+      // Remove the subzone
+      const result = await db.collection("tests").updateOne(
+        {
+          _id: new ObjectId(categoryId),
+          "tests._id": new ObjectId(testId), // Added subzone existence check
+        },
+        {
+          $pull: {
+            tests: { _id: new ObjectId(testId) },
+          },
+          $set: {
+            updatedAt: new Date(),
+            updatedBy: systemId,
+          },
+        }
+      );
+      return result.modifiedCount > 0 ? { success: true } : { success: false };
+    } catch (e) {
+      return handleError(e, "deleteSubZone");
     }
   }
 }

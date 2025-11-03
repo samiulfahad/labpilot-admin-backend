@@ -8,7 +8,7 @@ let client = null
 async function connect() {
   try {
     if (!client) {
-      client = new MongoClient(cloudUrl, {
+      client = new MongoClient(localUrl, {
         connectTimeoutMS: 10000,
         minPoolSize: 5,
         maxPoolSize: 100,

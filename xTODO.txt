@@ -1,5 +1,12 @@
 Running Task:
-Task 6 Done
+Task 7
+1.Done Add Admin
+2. Deactivate Admin
+3. Reactivate Admin
+4. Remove Admin
+5. Get All Admins
+6. Add Support Admin
+7. Remove Support Admin
 
 
 

@@ -232,3 +232,92 @@ content-type: application/json
     "testId": "6908ee858fdfb3850b1f71b8"
 
 }
+
+
+
+
+#################### Lab Admin  ####################### 
+
+# Route 1: Add a lab admin
+###
+POST http://localhost:3000/api/v1/lab-admin/add HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "6904720731e468512cc3211d",
+    "username": "kids44rss2eig3", 
+    "password": "12sss235d3",
+    "email": "m3e3dssiee43ll.com",
+    "phone": 13423359443133
+}
+
+# Route 2: Get a category with associated tests
+###
+GET http://localhost:3000/api/v1/test/category HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId" : "6908f7046cefa0d6c1602163"
+}
+
+# Route 3: Get all categories with associated tests
+###
+GET http://localhost:3000/api/v1/test/category/all HTTP/1.1
+content-type: application/json
+
+
+# Route 4: Edit category name
+###
+PATCH http://localhost:3000/api/v1/test/category/edit HTTP/1.1
+content-type: application/json
+
+{
+    "categoryName": "urine",
+    "categoryId": "6908f7046cefa0d6c1602163"
+}
+
+# Route 5: Delete category
+###
+DELETE http://localhost:3000/api/v1/test/category/delete HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId": "6908f6be0f340708b2671d49"
+}
+
+# Route 6: Create Test
+###
+POST http://localhost:3000/api/v1/test/add HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId":"6908f7046cefa0d6c1602163",
+    "testName": "Test 2",
+    "isOnline": false
+}
+
+
+
+# Route 7: Edit Test
+###
+PATCH http://localhost:3000/api/v1/test/edit HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId": "6908ee178fdfb3850b1f71b5",
+    "testId" : "6908f443cda96110c6acab54",
+    "testName": "Xxxx",
+    "isOnline": false
+}
+
+
+# Route 8: Delete test
+###
+DELETE http://localhost:3000/api/v1/test/delete HTTP/1.1
+content-type: application/json
+
+{
+    "categoryId": "6908ee178fdfb3850b1f71b5",
+    "testId": "6908ee858fdfb3850b1f71b8"
+
+}

@@ -8,6 +8,7 @@ const { connect } = require("./database/connection");
 const labRouter = require("./routes/lab");
 const zoneRouter = require("./routes/zone");
 const testRouter = require("./routes/test");
+const labAdminRouter = require("./routes/labAdmin");
 
 // const categoryRouter = require("./routes/category");
 
@@ -30,8 +31,8 @@ app.get("/", (req, res, next) => {
 // Use routers
 app.use("/api/v1/lab", labRouter);
 app.use("/api/v1/zone", zoneRouter);
-// app.use("/api/v1/category", categoryRouter);
 app.use("/api/v1/test", testRouter);
+app.use("/api/v1/lab-admin", labAdminRouter);
 
 // 404 Not Found Handler
 app.use((req, res, next) => {

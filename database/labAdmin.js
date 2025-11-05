@@ -89,15 +89,15 @@ class LabAdmin {
       return handleError(e, "add");
     }
   }
-  // Function 2: Deactivate an admin (temporary)
-  static async deactivate(_id, username, systemId) {
+
+  static async deactivate(_id, adminId, systemId) {
     try {
       const db = getClient();
 
-      const result = await db.collection("labs").findOneAndUpdate(
+      const result = await db.collection("labs").updateOne(
         {
           _id: new ObjectId(_id),
-          "admins.username": username,
+          "admins._id": new ObjectId(adminId),
         },
         {
           $set: {
@@ -105,85 +105,128 @@ class LabAdmin {
             "admins.$.deactivatedAt": new Date(),
             "admins.$.deactivatedBy": systemId,
           },
-        },
-        { returnDocument: "after" }
+        }
       );
 
-      if (!result.value) {
-        throw new Error("Admin not found");
+      // console.log(result);
+
+      if (result.matchedCount === 0) {
+        return { success: false, message: "Admin not found" };
       }
 
-      return result.value;
+      if (result.modifiedCount === 1) {
+        return {
+          success: true,
+          message: "Admin deactivated successfully",
+          adminId: adminId,
+        };
+      } else {
+        return {
+          success: false,
+          message: "Admin was found but not modified",
+        };
+      }
     } catch (e) {
       return handleError(e, "deactivateAdmin");
     }
   }
 
-  // Function 3: Reactivate a deactivated admin
-  static async activate(_id, username, systemId) {
+  // Function 3: Activate a deactivated admin
+  static async activate(_id, adminId, systemId) {
     try {
       const db = getClient();
 
-      const result = await db.collection("labs").findOneAndUpdate(
+      const result = await db.collection("labs").updateOne(
         {
           _id: new ObjectId(_id),
-          "admins.username": username,
+          "admins._id": new ObjectId(adminId),
         },
         {
           $set: {
             "admins.$.isActive": true,
             "admins.$.activatedAt": new Date(),
             "admins.$.activatedBy": systemId,
+            // Clear deactivation fields if they exist
+            "admins.$.deactivatedAt": null,
+            "admins.$.deactivatedBy": null,
           },
-        },
-        { returnDocument: "after" }
+        }
       );
 
-      if (!result.value) {
-        throw new Error("Admin not found");
+      // console.log(result);
+
+      if (result.matchedCount === 0) {
+        return { success: false, message: "Admin not found" };
       }
 
-      return result.value;
+      if (result.modifiedCount === 1) {
+        return {
+          success: true,
+          message: "Admin activated successfully",
+          adminId: adminId,
+        };
+      } else {
+        return {
+          success: false,
+          message: "Admin was found but not modified",
+        };
+      }
     } catch (e) {
       return handleError(e, "activateAdmin");
     }
   }
 
-  // Function 4: Remove an admin completely from the lab
-  static async remove(_id, username, systemId) {
+  // Function 4: Delete an admin completely from the lab
+  static async delete(_id, adminId, systemId) {
     try {
       const db = getClient();
 
-      const result = await db.collection("labs").findOneAndUpdate(
-        { _id: new ObjectId(_id) },
+      const result = await db.collection("labs").updateOne(
+        {
+          _id: new ObjectId(_id),
+          "admins._id": new ObjectId(adminId),
+        },
         {
           $pull: {
-            admins: { username: username },
+            admins: { _id: new ObjectId(adminId) },
           },
-        },
-        { returnDocument: "after" }
+        }
       );
 
-      if (!result.value) {
-        throw new Error("Lab not found");
-      }
-
-      return result.value;
+      // console.log(result);
+      // Return true if admin was found and removed, false otherwise
+      return result.modifiedCount === 1 ? { success: true, adminId: adminId } : { success: false };
     } catch (e) {
-      return handleError(e, "removeAdmin");
+      return handleError(e, "delete");
     }
   }
 
   // Function 5: Get all admins for a lab
-  static async getAll(_id) {
+  static async getAll(labObjId) {
     try {
       const db = getClient();
 
-      const lab = await db.collection("labs").findOne({ _id: new ObjectId(_id) }, { projection: { admins: 1 } });
+      const lab = await db.collection("labs").findOne(
+        { _id: new ObjectId(labObjId) },
+        {
+          projection: {
+            admins: {
+              username: 1,
+              email: 1,
+              isActive: 1,
+              _id: 1,
+            },
+          },
+        }
+      );
 
-      return lab?.admins || [];
+      if (lab?.admins) {
+        return { success: true, admins: lab.admins };
+      } else {
+        return { success: false };
+      }
     } catch (e) {
-      return handleError(e, "getAdmins");
+      return handleError(e, "getAll");
     }
   }
 

@@ -1,10 +1,10 @@
 Running Task:
 Task 7
-1.Done Add Admin
-2. Deactivate Admin
-3. Reactivate Admin
-4. Remove Admin
-5. Get All Admins
+1. Done Add Admin
+2. Done Deactivate Admin
+3. Done Activate Admin
+4. Done delete Admin
+5. Done Get All Admins
 6. Add Support Admin
 7. Remove Support Admin
 
@@ -12,8 +12,8 @@ Task 7
 
 
 Tasks to do:
-Task 8: Endpoints for creating monthly bills
 Task 7: Endpoints for adding support account, warnings, notes, changing active status in lab account
+Task 8: Endpoints for creating monthly bills
 Task 6 Done: Implement express router
 Task 5 Done: Endpoints for CRUD of Lab Test, Test Category
 Task 4 Done: Integrate with frontend

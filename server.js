@@ -32,7 +32,7 @@ app.get("/", (req, res, next) => {
 app.use("/api/v1/lab", labRouter);
 app.use("/api/v1/zone", zoneRouter);
 app.use("/api/v1/test", testRouter);
-app.use("/api/v1/lab-admin", labAdminRouter);
+app.use("/api/v1/lab/admin", labAdminRouter);
 
 // 404 Not Found Handler
 app.use((req, res, next) => {

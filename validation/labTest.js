@@ -7,6 +7,7 @@ const validateTestName = body("testName")
   .withMessage("Test name is required.")
   .isString()
   .trim()
+  .escape()
   .toUpperCase()
   .isLength({ max: 70 })
   .withMessage("Test name must not exceed 70 characters.");
@@ -15,6 +16,7 @@ const validateIsOnline = body("isOnline")
   .notEmpty()
   .withMessage("Online status is required.")
   .bail()
+  .escape()
   .isBoolean()
   .withMessage("Online status must be a boolean (true or false).")
   .toBoolean();
@@ -25,14 +27,15 @@ const validateCatName = body("categoryName")
   .withMessage("Category name is required.")
   .isString()
   .trim()
+  .escape()
   .toUpperCase()
   .isLength({ max: 80 })
   .withMessage("Category name must not exceed 50 characters.");
 
-const validatePOSTCat = [validateCatName];
-const validatePATCHCat = [validateMongoId("categoryId", "Category ID"), ...validatePOSTCat];
+const validateAddCat = [validateCatName];
+const validateEditCat = [validateMongoId("categoryId", "Category ID"), ...validateAddCat];
 
-const validatePOSTTest = [validateTestName, validateIsOnline, validateMongoId("categoryId", "Category ID")];
-const validatePATCHTest = [validateMongoId("testId", "Test ID"), ...validatePOSTTest];
+const validateAddTest = [validateTestName, validateIsOnline, validateMongoId("categoryId", "Category ID")];
+const validateEditTest = [validateMongoId("testId", "Test ID"), ...validateAddTest];
 
-module.exports = { validatePOSTTest, validatePATCHTest, validatePOSTCat, validatePATCHCat };
+module.exports = { validateAddTest, validateEditTest, validateAddCat, validateEditCat };

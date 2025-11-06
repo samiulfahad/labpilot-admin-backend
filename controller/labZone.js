@@ -1,9 +1,9 @@
 /** @format */
 
-const Zone = require("../database/zone");
+const Zone = require("../database/labZone");
 
 // Function 1: Create a zone
-const postZone = async (req, res, next) => {
+const createZone = async (req, res, next) => {
   try {
     //console.log('postZone called');
     const systemId = 555;
@@ -43,7 +43,7 @@ const getZone = async (req, res, next) => {
 };
 
 // Function 3: Get all zones (with its subzones)
-const getAllZones = async (req, res, next) => {
+const listZones = async (req, res, next) => {
   try {
     const zones = await Zone.findAll();
     if (zones.length >= 0) {
@@ -57,7 +57,7 @@ const getAllZones = async (req, res, next) => {
 };
 
 // Function 4: Update a zone
-const patchZone = async (req, res, next) => {
+const updateZone = async (req, res, next) => {
   try {
     const systemId = 555;
     const { zoneId, zoneName } = req.body;
@@ -91,7 +91,7 @@ const deleteZone = async (req, res, next) => {
 };
 
 // Function 6: Create a subzone
-const postSubZone = async (req, res, next) => {
+const createSubZone = async (req, res, next) => {
   try {
     const systemId = 555;
     const { zoneId, subZoneName } = req.body;
@@ -109,7 +109,7 @@ const postSubZone = async (req, res, next) => {
 };
 
 // Function 7: Update a subzone
-const patchSubZone = async (req, res, next) => {
+const updateSubZone = async (req, res, next) => {
   try {
     const systemId = 555;
     const { zoneId, subZoneId, subZoneName } = req.body;
@@ -147,14 +147,14 @@ const deleteSubZone = async (req, res, next) => {
 
 module.exports = {
   // Zone endpoints
-  postZone,
+  createZone,
   getZone,
-  getAllZones,
-  patchZone,
+  listZones,
+  updateZone,
   deleteZone,
 
   // SubZone endpoints
-  postSubZone,
-  patchSubZone,
+  createSubZone,
+  updateSubZone,
   deleteSubZone,
 };

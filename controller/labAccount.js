@@ -1,9 +1,9 @@
 /** @format */
 
-const Lab = require("../database/lab");
+const Lab = require("../database/labAccount");
 
 // Function 1: Create a new Lab
-const postLab = async (req, res, next) => {
+const createLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user (from middleware)
     const systemId = req.user?.id || req.user?.systemId || 555; // Fallback for development
@@ -25,7 +25,7 @@ const postLab = async (req, res, next) => {
 };
 
 // Function 2: Get a Lab (Search by labId, email, contact, zone, subzone)
-const getLab = async (req, res, next) => {
+const searchLab = async (req, res, next) => {
   try {
     const { field, value } = req.body;
 
@@ -41,7 +41,7 @@ const getLab = async (req, res, next) => {
 };
 
 // Function 3: Get All Labs
-const getAllLabs = async (req, res, next) => {
+const listLabs = async (req, res, next) => {
   try {
     const labs = await Lab.findAll();
     if (labs && labs.length > 0) {
@@ -55,7 +55,7 @@ const getAllLabs = async (req, res, next) => {
 };
 
 // Function 4: Update Lab by Lab ID
-const patchLab = async (req, res, next) => {
+const updateLab = async (req, res, next) => {
   try {
     // Get systemId from authenticated user
     const systemId = req.user?.id || req.user?.systemId || 777;
@@ -92,9 +92,9 @@ const deleteLab = async (req, res, next) => {
 };
 
 module.exports = {
-  postLab,
-  getLab,
-  getAllLabs,
-  patchLab,
+  createLab,
+  searchLab,
+  listLabs,
+  updateLab,
   deleteLab,
 };

@@ -1,9 +1,9 @@
 /** @format */
 
-const Test = require("../database/test");
+const Test = require("../database/labTest");
 
 // Function 1: Create a Test Category
-const postCategory = async (req, res, next) => {
+const createCategory = async (req, res, next) => {
   try {
     //console.log('postTestCategory called');
     const systemId = 555;
@@ -22,7 +22,7 @@ const postCategory = async (req, res, next) => {
 };
 
 // Function 2: Get a category (with testlist)
-const getTestsByCategory = async (req, res, next) => {
+const listTestsByCategory = async (req, res, next) => {
   try {
     const _id = req.body.categoryId;
     const result = await Test.findTestsByCategoryId(_id);
@@ -37,7 +37,7 @@ const getTestsByCategory = async (req, res, next) => {
 };
 
 // Function 3: Get all categories (with tests)
-const getAllTestsWithCategories = async (req, res, next) => {
+const listTests = async (req, res, next) => {
   try {
     const result = await Test.findAllCategories();
     if (result.success) {
@@ -51,7 +51,7 @@ const getAllTestsWithCategories = async (req, res, next) => {
 };
 
 // Function 4: Update a category name
-const patchCategory = async (req, res, next) => {
+const updateCategory = async (req, res, next) => {
   try {
     const systemId = 555;
     const { categoryId, categoryName } = req.body;
@@ -85,7 +85,7 @@ const deleteCategory = async (req, res, next) => {
 };
 
 // Function 6: Create a test
-const postTest = async (req, res, next) => {
+const createTest = async (req, res, next) => {
   try {
     const systemId = 555;
     const { categoryId, testName, isOnline } = req.body;
@@ -103,7 +103,7 @@ const postTest = async (req, res, next) => {
 };
 
 // Function 7: Update a test
-const patchTest = async (req, res, next) => {
+const updateTest = async (req, res, next) => {
   try {
     const systemId = 555;
     const { categoryId, testId, testName, isOnline } = req.body;
@@ -141,14 +141,14 @@ const deleteTest = async (req, res, next) => {
 
 module.exports = {
   // Category endpoints
-  postCategory,
-  getTestsByCategory,
-  getAllTestsWithCategories,
-  patchCategory,
+  createCategory,
+  listTestsByCategory,
+  listTests,
+  updateCategory,
   deleteCategory,
 
   // Test endpoints
-  postTest,
-  patchTest,
+  createTest,
+  updateTest,
   deleteTest,
 };

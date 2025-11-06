@@ -1,8 +1,9 @@
 const LabAdmin = require("../database/labAdmin");
 
-const postAdmin = async (req, res, next) => {
+const createAdmin = async (req, res, next) => {
   try {
-    const adminData = ({ _id, username, password, email, phone } = req.body);
+    const { _id, username, password, email, phone } = req.body;
+    const adminData = { username, password, email, phone };
     // console.log(adminData);
     const systemId = 555;
     const result = await LabAdmin.add(_id, adminData, systemId);
@@ -50,7 +51,7 @@ const activateAdmin = async (req, res, next) => {
   }
 };
 
-const getAllAdmins = async (req, res, next) => {
+const listAdmins = async (req, res, next) => {
   try {
     const { _id } = req.body;
     // console.log(adminData);
@@ -82,7 +83,7 @@ const deleteAdmin = async (req, res, next) => {
   }
 };
 
-const postSupportAdmin = async (req, res, next) => {
+const createSupportAdmin = async (req, res, next) => {
   try {
     const { _id, password } = req.body;
     // console.log(adminData);
@@ -114,7 +115,6 @@ const deactivateSupportAdmin = async (req, res, next) => {
   }
 };
 
-
 const activateSupportAdmin = async (req, res, next) => {
   try {
     const { _id, password } = req.body;
@@ -132,12 +132,12 @@ const activateSupportAdmin = async (req, res, next) => {
 };
 
 module.exports = {
-  postAdmin,
+  createAdmin,
   deactivateAdmin,
   activateAdmin,
-  getAllAdmins,
+  listAdmins,
   deleteAdmin,
-  postSupportAdmin,
+  createSupportAdmin,
   deactivateSupportAdmin,
-  activateSupportAdmin
+  activateSupportAdmin,
 };

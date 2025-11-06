@@ -9,6 +9,7 @@ const validateLabName = body("labName")
   .bail()
   .isString()
   .trim()
+  .escape()
   .isLength({ max: 150 })
   .withMessage("Lab name must not exceed 150 characters.");
 
@@ -17,6 +18,8 @@ const validateLabId = body("labId")
   .notEmpty()
   .withMessage("Lab ID is required.")
   .bail()
+  .trim()
+  .escape()
   .isInt({ min: 100000, max: 999999 })
   .withMessage("Lab ID must be a 6-digit number.");
 
@@ -27,6 +30,7 @@ const validateAddress = body("address")
   .bail()
   .isString()
   .trim()
+  .escape()
   .isLength({ max: 200 })
   .withMessage("Lab address must not exceed 200 characters.");
 
@@ -34,6 +38,8 @@ const validateAddress = body("address")
 const validateContact1 = body("contact1")
   .customSanitizer((value) => (value === null || value === undefined ? "" : value.toString()))
   .notEmpty()
+  .trim()
+  .escape()
   .withMessage("Contact Number is required.")
   .bail()
   .isNumeric()
@@ -44,6 +50,8 @@ const validateContact1 = body("contact1")
 
 // Contact: optional, but if provided must be exactly 11 numeric digits
 const validateContact2 = body("contact2")
+  .trim()
+  .escape()
   .customSanitizer((value) => (value === null || value === undefined ? "" : value.toString()))
   .optional()
   .isNumeric()
@@ -55,6 +63,8 @@ const validateContact2 = body("contact2")
 // Email: required, must be valid email format
 const validateEmail = body("email")
   .notEmpty()
+  .trim()
+  .escape()
   .withMessage("Email is required.")
   .bail()
   .isEmail()
@@ -64,6 +74,8 @@ const validateEmail = body("email")
 // Active Status: required, must be boolean
 const validateIsActive = body("isActive")
   .notEmpty()
+  .trim()
+  .escape()
   .withMessage("Active status is required.")
   .bail()
   .isBoolean()
@@ -75,7 +87,7 @@ const validateZone = validateMongoId("zoneId", "Zone ID");
 // Sub Zone: required, must be a string
 const validateSubZone = validateMongoId("subZoneId", "Subzone ID");
 
-const labValidationRules = [
+const validateAddLabAccount = [
   validateLabName,
   validateLabId,
   validateAddress,
@@ -87,15 +99,11 @@ const labValidationRules = [
   validateIsActive,
 ];
 
+const validateEditLabAccount = [validateMongoId("_id", "Lab id"), ...validateAddLabAccount];
+const validateDeleteLabAccount = [validateMongoId("_id", "Lab ID")];
+
 module.exports = {
-  validateLabName,
-  validateLabId,
-  validateAddress,
-  validateContact1,
-  validateContact2,
-  validateEmail,
-  validateZone,
-  validateSubZone,
-  validateIsActive,
-  labValidationRules,
+  validateAddLabAccount,
+  validateEditLabAccount,
+  validateDeleteLabAccount,
 };

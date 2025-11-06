@@ -1,29 +1,38 @@
 const express = require("express");
 const router = express.Router();
-const labAdmin = require("../controller/labAdmin");
+const {
+  createAdmin,
+  deactivateAdmin,
+  activateAdmin,
+  listAdmins,
+  deleteAdmin,
+  createSupportAdmin,
+  deactivateSupportAdmin,
+  activateSupportAdmin,
+} = require("../controller/labAdmin");
 
 // Create admin
-router.post("/add", labAdmin.postAdmin);
+router.post("/add", createAdmin);
 
 // Deactivate admin
-router.patch("/deactivate", labAdmin.deactivateAdmin);
+router.patch("/deactivate", deactivateAdmin);
 
 // Activate admin
-router.patch("/activate", labAdmin.activateAdmin);
+router.patch("/activate", activateAdmin);
 
 // Get all admins
-router.get("/all", labAdmin.getAllAdmins);
+router.get("/all", listAdmins);
 
 // Get all admins
-router.delete("/delete", labAdmin.deleteAdmin);
+router.delete("/delete", deleteAdmin);
 
 // Add Support Admin
-router.post("/add/supportAdmin", labAdmin.postSupportAdmin);
+router.post("/add/supportAdmin", createSupportAdmin);
 
 // Deactivate Support Admin
-router.patch("/deactivate/supportAdmin", labAdmin.deactivateSupportAdmin);
+router.patch("/deactivate/supportAdmin", deactivateSupportAdmin);
 
 // Activate Support Admin
-router.patch("/activate/supportAdmin", labAdmin.activateSupportAdmin);
+router.patch("/activate/supportAdmin", activateSupportAdmin);
 
 module.exports = router;

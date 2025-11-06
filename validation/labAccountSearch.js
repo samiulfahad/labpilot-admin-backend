@@ -1,0 +1,68 @@
+/** @format */
+
+const { body } = require("express-validator");
+
+// Validate search field
+const validateSearchField = body("field")
+  .notEmpty()
+  .withMessage("Search field is required.")
+  .isIn(["labId", "email", "contact", "zoneId", "subZoneId"])
+  .withMessage("Invalid search param");
+
+// Validate search value
+const validateSearchValue = body("value")
+  .notEmpty()
+  .withMessage("Search value is required.")
+  .isLength({ max: 50 })
+  .withMessage("Search value must not exceed 50 characters.")
+  .custom((value, { req }) => {
+    const field = req.body.field;
+
+    if (field === "labId") {
+      // For labId, it should be a string that contains only 6 digits
+      if (!/^\d{6}$/.test(value)) {
+        throw new Error("Lab ID must be a 6-digit number");
+      }
+      return true;
+    }
+
+    if (field === "email") {
+      // For email, use built-in isEmail validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(value)) {
+        throw new Error("Please provide a valid email address");
+      }
+      return true;
+    }
+
+    if (field === "contact") {
+      // For contact, it should be a string of exactly 11 digits
+      if (!/^\d{11}$/.test(value)) {
+        throw new Error("Contact must contain exactly 11 numeric digits");
+      }
+      return true;
+    }
+
+    if (field === "zoneId") {
+      // For zoneId, validate as MongoDB ObjectId
+      if (!/^[0-9a-fA-F]{24}$/.test(value)) {
+        throw new Error("Invalid Zone ID format");
+      }
+      return true;
+    }
+
+    if (field === "subZoneId") {
+      // For subZoneId, validate as MongoDB ObjectId
+      if (!/^[0-9a-fA-F]{24}$/.test(value)) {
+        throw new Error("Invalid Sub Zone ID format");
+      }
+      return true;
+    }
+    return true;
+  });
+
+const validateSearchLab = [validateSearchField, validateSearchValue];
+
+module.exports = {
+  validateSearchLab,
+};

@@ -245,10 +245,10 @@ content-type: application/json
 
 {
     "_id": "690cc86249b30bec94ae353e",
-    "username": "kingo2", 
+    "username": "kin474g5o2", 
     "password": "12s235d3",
-    "email": "m3e3dssieeu43ll.com",
-    "phone": 134243133
+    "email": "m3e3d4448ss9ieeu43ll.com",
+    "phone": 1342484431933
 }
 
 # Route 2: Deactivate admin
@@ -324,3 +324,78 @@ content-type: application/json
 }
 
 
+
+
+
+#################### Lab Staff  ####################### 
+
+# Route 1: Add staff
+###
+POST http://localhost:3000/api/v1/lab/staff/add HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "690cc86249b30bec94ae353e",
+    "name": "Jamal Mia"
+    "username": "kingo2", 
+    "password": "12s235d3",
+    "access": ["createInvoice", "readInvoice", "deleteInvoice", "readCashmemo"],
+    "email": "m3e3dssieeu43ll.com",
+    "phone": 134243133
+}
+
+# Route 2: Deactivate staff
+###
+PATCH http://localhost:3000/api/v1/lab/staff/deactivate HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "690cc86249b30bec94ae353e",
+    "staffId": "690cc8af49b30bec94ae353f"
+}
+
+
+# Route 3: Activate staff
+###
+PATCH http://localhost:3000/api/v1/lab/staff/activate HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "690cc86249b30bec94ae353e",
+    "staffId": "690cc8af49b30bec94ae353f"
+}
+
+# Route 4: Get all staffs
+###
+GET http://localhost:3000/api/v1/lab/staff/all HTTP/1.1
+content-type: application/json
+
+{
+     "_id": "690cc86249b30bec94ae353e"
+}
+
+
+# Route 4: Edit staff
+###
+POST http://localhost:3000/api/v1/lab/staff/edit HTTP/1.1
+content-type: application/json
+
+{
+    "_id": "690cc86249b30bec94ae353e",
+    "name": "Jamal Nazrul",
+    "username": "kingo2", 
+    "password": "12s235d3",
+    "access": ["createInvoice", "readCashmemo"],
+    "email": "m3e3dssieeu4.com",
+    "phone": 134243133
+}
+
+# Route 5: Delete Staff
+###
+DELETE http://localhost:3000/api/v1/lab/admin/delete HTTP/1.1
+content-type: application/json
+
+{
+     "_id": "690cc86249b30bec94ae353e",
+     "staffId": "690cd953c83bd33610092e32"
+}

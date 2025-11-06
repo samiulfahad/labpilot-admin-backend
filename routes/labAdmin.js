@@ -17,4 +17,13 @@ router.get("/all", labAdmin.getAllAdmins);
 // Get all admins
 router.delete("/delete", labAdmin.deleteAdmin);
 
+// Add Support Admin
+router.post("/add/supportAdmin", labAdmin.postSupportAdmin);
+
+// Deactivate Support Admin
+router.patch("/deactivate/supportAdmin", labAdmin.deactivateSupportAdmin);
+
+// Activate Support Admin
+router.patch("/activate/supportAdmin", labAdmin.activateSupportAdmin);
+
 module.exports = router;

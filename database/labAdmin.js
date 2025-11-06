@@ -2,6 +2,7 @@
 
 const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
+const getGMT = require('../helper/getGMT');
 
 const handleError = (e, methodName) => {
   console.log("Error Location: DB File (database > labAdmin.js)");
@@ -9,6 +10,7 @@ const handleError = (e, methodName) => {
   console.log(`Error Message: ${e.message}`);
   return { success: false };
 };
+
 
 class LabAdmin {
   // Function 1: Add a new admin to the lab with duplicate checking
@@ -51,7 +53,7 @@ class LabAdmin {
         email: adminData.email,
         phone: adminData.phone,
         isActive: true,
-        createdAt: new Date(),
+        createdAt: getGMT(),
         createdBy: systemId,
       };
 
@@ -90,6 +92,7 @@ class LabAdmin {
     }
   }
 
+  // Function 2: Deactivate admin
   static async deactivate(_id, adminId, systemId) {
     try {
       const db = getClient();
@@ -102,7 +105,7 @@ class LabAdmin {
         {
           $set: {
             "admins.$.isActive": false,
-            "admins.$.deactivatedAt": new Date(),
+            "admins.$.deactivatedAt": getGMT(),
             "admins.$.deactivatedBy": systemId,
           },
         }
@@ -144,11 +147,8 @@ class LabAdmin {
         {
           $set: {
             "admins.$.isActive": true,
-            "admins.$.activatedAt": new Date(),
-            "admins.$.activatedBy": systemId,
-            // Clear deactivation fields if they exist
-            "admins.$.deactivatedAt": null,
-            "admins.$.deactivatedBy": null,
+            "admins.$.activatedAt": getGMT(),
+            "admins.$.activatedBy": systemId
           },
         }
       );
@@ -230,66 +230,119 @@ class LabAdmin {
     }
   }
 
-  // Function 6: Add a predefined support admin to the lab
+  // Function 6: Add Support Admin only if doesn't exist
   static async addSupportAdmin(_id, password, systemId) {
     try {
       const db = getClient();
 
-      // Check if supportAdmin already exists in this lab
-      const existingLab = await db.collection("labs").findOne({
-        _id: new ObjectId(_id),
-        "admins.username": "supportAdmin",
-      });
+      // First check if support admin already exists
+      const existingLab = await db.collection("labs").findOne(
+        {
+          _id: new ObjectId(_id),
+          "admins.username": "supportAdmin",
+        },
+        { projection: { "admins.$": 1 } }
+      );
 
-      if (existingLab) {
-        throw new Error("Support admin already exists in this lab");
+      if (existingLab && existingLab.admins && existingLab.admins.length > 0) {
+        return {
+          success: false,
+          message: "Support admin already exists",
+        };
       }
 
-      const supportAdmin = {
+      // Create new support admin
+      const supportAdminData = {
         _id: new ObjectId(),
         username: "supportAdmin",
-        password: password,
+        password: password, // Make sure to hash this password before storing
         isActive: true,
-        createdAt: new Date(),
+        createdAt: getGMT(),
         createdBy: systemId,
       };
 
-      const result = await db.collection("labs").findOneAndUpdate(
+      const result = await db.collection("labs").updateOne(
         { _id: new ObjectId(_id) },
         {
-          $push: { admins: supportAdmin },
-        },
-        { returnDocument: "after" }
+          $push: { admins: supportAdminData },
+        }
       );
 
-      return result.value;
+      if (result.matchedCount === 0) {
+        return {
+          success: false,
+          message: "Lab not found",
+        };
+      }
+
+      // Return success response
+      return {
+        success: true,
+        message: "Support admin added successfully",
+      };
     } catch (e) {
       return handleError(e, "addSupportAdmin");
     }
   }
 
-  // Function 7: Remove the support admin from the lab
-  static async removeSupportAdmin(_id, systemId) {
+  // Function 7: Activate Support Admin with new password
+  static async activateSupportAdmin(_id, password, systemId) {
     try {
       const db = getClient();
 
-      const result = await db.collection("labs").findOneAndUpdate(
-        { _id: new ObjectId(_id) },
+      const result = await db.collection("labs").updateOne(
         {
-          $pull: {
-            admins: { username: "supportAdmin" },
-          },
+          _id: new ObjectId(_id),
+          "admins.username": "supportAdmin",
         },
-        { returnDocument: "after" }
+        {
+          $set: {
+            "admins.$.password": password,
+            "admins.$.isActive": true,
+            "admins.$.lastActivatedAt": getGMT(),
+            "admins.$.activatedBy": systemId,
+          },
+          $inc: { "admins.$.accessCount": 1 },
+        }
+      );
+      console.log(result.modifiedCount);
+      if (result.modifiedCount === 1) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
+    } catch (e) {
+      return handleError(e, "activateSupportAdmin");
+    }
+  }
+
+  // Function 8: Deactivate Support Admin
+  static async deactivateSupportAdmin(_id, systemId) {
+    try {
+      const db = getClient();
+
+      const result = await db.collection("labs").updateOne(
+        {
+          _id: new ObjectId(_id),
+          "admins.username": "supportAdmin",
+        },
+        {
+          $set: {
+            "admins.$.isActive": false,
+            "admins.$.deactivatedBy": systemId,
+            "admins.$.deactivatedAt": getGMT(),
+          },
+        }
       );
 
-      if (!result.value) {
-        throw new Error("Lab not found");
+      // console.log(result.modifiedCount);
+      if (result.modifiedCount === 1) {
+        return { success: true };
+      } else {
+        return { success: false };
       }
-
-      return result.value;
     } catch (e) {
-      return handleError(e, "removeSupportAdmin");
+      return handleError(e, "deactivateSupportAdmin");
     }
   }
 }

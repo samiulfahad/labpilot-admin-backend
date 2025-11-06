@@ -1,4 +1,4 @@
-##################### Lab  ####################### 
+##################### Lab ####################### 
 
 # Route 1: Create a new lab
 ###
@@ -6,7 +6,7 @@ POST http://localhost:3000/api/v1/lab/add HTTP/1.1
 content-type: application/json
 
 {
-    "labName": "City  Diagnostic Center",
+    "labName": "Bubu Dudu  Diagnostic Center",
     "labId": 112287,
     "address": "123 Medical Street, Healthcare City",
     "contact1": 10723939836,
@@ -240,15 +240,15 @@ content-type: application/json
 
 # Route 1: Add admin
 ###
-POST http://localhost:3000/api/v1/lab-admin/add HTTP/1.1
+POST http://localhost:3000/api/v1/lab/admin/add HTTP/1.1
 content-type: application/json
 
 {
-    "_id": "6904720731e468512cc3211d",
-    "username": "kids44rss2eig3", 
-    "password": "12sss235d3",
-    "email": "m3e3dssiee43ll.com",
-    "phone": 13423359443133
+    "_id": "690cc86249b30bec94ae353e",
+    "username": "kingo2", 
+    "password": "12s235d3",
+    "email": "m3e3dssieeu43ll.com",
+    "phone": 134243133
 }
 
 # Route 2: Deactivate admin
@@ -257,8 +257,8 @@ PATCH http://localhost:3000/api/v1/lab/admin/deactivate HTTP/1.1
 content-type: application/json
 
 {
-    "_id": "6904720731e468512cc3211d",
-    "adminId": "690a652efbc3d46140b823da"
+    "_id": "690cc86249b30bec94ae353e",
+    "adminId": "690cc8af49b30bec94ae353f"
 }
 
 
@@ -268,8 +268,8 @@ PATCH http://localhost:3000/api/v1/lab/admin/activate HTTP/1.1
 content-type: application/json
 
 {
-    "_id": "6904720731e468512cc3211d",
-    "adminId": "690a652efbc3d46140b823da"
+    "_id": "690cc86249b30bec94ae353e",
+    "adminId": "690cc8af49b30bec94ae353f"
 }
 
 # Route 4: Get all admins
@@ -278,7 +278,7 @@ GET http://localhost:3000/api/v1/lab/admin/all HTTP/1.1
 content-type: application/json
 
 {
-     "_id": "6904720731e468512cc3211d"
+     "_id": "690cc86249b30bec94ae353e"
 }
 
 
@@ -288,62 +288,39 @@ DELETE http://localhost:3000/api/v1/lab/admin/delete HTTP/1.1
 content-type: application/json
 
 {
-     "_id": "6904720731e468512cc3211d",
-     "adminId": "690a660322a032908ac3f200"
+     "_id": "690cc86249b30bec94ae353e",
+     "adminId": "690cd953c83bd33610092e32"
 }
 
-# Route 6: Edit category name
+# Route 6: Add support admin
 ###
-PATCH http://localhost:3000/api/v1/test/category/edit HTTP/1.1
+POST http://localhost:3000/api/v1/lab/admin/add/supportAdmin HTTP/1.1
 content-type: application/json
 
 {
-    "categoryName": "urine",
-    "categoryId": "6908f7046cefa0d6c1602163"
+    "_id": "690cc86249b30bec94ae353e",
+    "password": "abcd"
 }
 
-# Route 5: Delete category
+
+# Route 7: Deactivate support admin
 ###
-DELETE http://localhost:3000/api/v1/test/category/delete HTTP/1.1
+PATCH http://localhost:3000/api/v1/lab/admin/deactivate/supportAdmin HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId": "6908f6be0f340708b2671d49"
+    "_id": "690cc86249b30bec94ae353e"
 }
 
-# Route 6: Create Test
+
+# Route 8: Activate support admin
 ###
-POST http://localhost:3000/api/v1/test/add HTTP/1.1
+PATCH http://localhost:3000/api/v1/lab/admin/activate/supportAdmin HTTP/1.1
 content-type: application/json
 
 {
-    "categoryId":"6908f7046cefa0d6c1602163",
-    "testName": "Test 2",
-    "isOnline": false
+    "_id": "690cc86249b30bec94ae353e",
+    "password": 123
 }
 
 
-
-# Route 7: Edit Test
-###
-PATCH http://localhost:3000/api/v1/test/edit HTTP/1.1
-content-type: application/json
-
-{
-    "categoryId": "6908ee178fdfb3850b1f71b5",
-    "testId" : "6908f443cda96110c6acab54",
-    "testName": "Xxxx",
-    "isOnline": false
-}
-
-
-# Route 8: Delete test
-###
-DELETE http://localhost:3000/api/v1/test/delete HTTP/1.1
-content-type: application/json
-
-{
-    "categoryId": "6908ee178fdfb3850b1f71b5",
-    "testId": "6908ee858fdfb3850b1f71b8"
-
-}

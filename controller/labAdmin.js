@@ -82,4 +82,62 @@ const deleteAdmin = async (req, res, next) => {
   }
 };
 
-module.exports = { postAdmin, deactivateAdmin, activateAdmin, getAllAdmins, deleteAdmin };
+const postSupportAdmin = async (req, res, next) => {
+  try {
+    const { _id, password } = req.body;
+    // console.log(adminData);
+    const systemId = 555;
+    const result = await LabAdmin.addSupportAdmin(_id, password, systemId);
+    if (result.success) {
+      return res.status(201).send({ success: true });
+    } else {
+      return res.status(400).send({ success: false });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deactivateSupportAdmin = async (req, res, next) => {
+  try {
+    const { _id } = req.body;
+    // console.log(adminData);
+    const systemId = 555;
+    const result = await LabAdmin.deactivateSupportAdmin(_id, systemId);
+    if (result.success) {
+      return res.status(201).send({ success: true });
+    } else {
+      return res.status(400).send({ success: false });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+
+const activateSupportAdmin = async (req, res, next) => {
+  try {
+    const { _id, password } = req.body;
+    // console.log(adminData);
+    const systemId = 666;
+    const result = await LabAdmin.activateSupportAdmin(_id, password, systemId);
+    if (result.success) {
+      return res.status(201).send({ success: true });
+    } else {
+      return res.status(400).send({ success: false });
+    }
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = {
+  postAdmin,
+  deactivateAdmin,
+  activateAdmin,
+  getAllAdmins,
+  deleteAdmin,
+  postSupportAdmin,
+  deactivateSupportAdmin,
+  activateSupportAdmin
+};

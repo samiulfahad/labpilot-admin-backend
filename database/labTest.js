@@ -2,6 +2,7 @@
 
 const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
+const getGMT = require("../helper/getGMT")
 
 const handleError = (e, methodName) => {
   console.log("Error Location: DB File (database > test.js)");
@@ -15,7 +16,7 @@ class Test {
     this.categoryName = categoryName;
     this.tests = [];
     this.createdBy = systemId;
-    this.createdAt = new Date();
+    this.createdAt = getGMT();
   }
 
   static async createCategory(categoryName, systemId) {
@@ -23,7 +24,7 @@ class Test {
       categoryName: categoryName,
       tests: [],
       createdBy: systemId,
-      createdAt: new Date(),
+      createdAt: getGMT(),
     };
     try {
       const db = getClient();
@@ -108,7 +109,7 @@ class Test {
           $set: {
             categoryName: categoryName,
             updatedBy: systemId,
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
           },
         }
       );
@@ -151,7 +152,7 @@ class Test {
         _id: new ObjectId(),
         testName: testName,
         isOnline: isOnline,
-        createdAt: new Date(),
+        createdAt: getGMT(),
         createdBy: systemId,
       };
 
@@ -162,7 +163,7 @@ class Test {
             tests: test,
           },
           $set: {
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         },
@@ -212,9 +213,9 @@ class Test {
           $set: {
             "tests.$.testName": newTestName,
             "tests.$.isOnline": isOnline,
-            "tests.$.updatedAt": new Date(),
+            "tests.$.updatedAt": getGMT(),
             "tests.$.updatedBy": systemId,
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         },
@@ -251,7 +252,7 @@ class Test {
             tests: { _id: new ObjectId(testId) },
           },
           $set: {
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         }

@@ -40,7 +40,7 @@ class LabStaff {
         return {
           success: false,
           duplicate: true,
-          message: `Duplicate values found: ${duplicateFields.join(", ")} already exists in this lab`,
+          message: `${duplicateFields.join(", ")} already exists in this lab`,
         };
       }
 
@@ -53,7 +53,7 @@ class LabStaff {
         email: staffData.email,
         phone: staffData.phone,
         access: staffData.access || [],
-        isActive: true,
+        isActive: staffData.isActive,
         createdAt: getGMT(),
         createdBy: systemId,
       };
@@ -230,107 +230,70 @@ class LabStaff {
     }
   }
 
-  // Function 6: Edit staff details
-  static async edit(_id, staffId, staffData, systemId) {
+  // Function 6: Update Staff access
+  static async updateAccess(_id, staffId, staffAccess, systemId) {
     try {
       const db = getClient();
 
-      // Check for duplicates (excluding current staff)
-      const existingLab = await db.collection("labs").findOne({
-        _id: new ObjectId(_id),
-        "staffs._id": { $ne: new ObjectId(staffId) },
-        $or: [
-          { "staffs.username": staffData.username },
-          { "staffs.email": staffData.email },
-          { "staffs.phone": staffData.phone },
-        ],
-      });
-
-      if (existingLab) {
-        const duplicateStaff = existingLab.staffs.find(
-          (s) => s.username === staffData.username || s.email === staffData.email || s.phone === staffData.phone
-        );
-
-        const duplicateFields = [];
-        if (duplicateStaff.username === staffData.username) duplicateFields.push("username");
-        if (duplicateStaff.email === staffData.email) duplicateFields.push("email");
-        if (duplicateStaff.phone === staffData.phone) duplicateFields.push("phone");
-
-        return {
-          success: false,
-          duplicate: true,
-          message: `Duplicate values found: ${duplicateFields.join(", ")} already exists in this lab`,
-        };
-      }
-
-      // Update staff
-      const updateFields = {
-        "staffs.$.name": staffData.name,
-        "staffs.$.username": staffData.username,
-        "staffs.$.email": staffData.email,
-        "staffs.$.phone": staffData.phone,
-        "staffs.$.access": staffData.access || [],
-        "staffs.$.updatedAt": getGMT(),
-        "staffs.$.updatedBy": systemId,
-      };
-
-      // Only update password if provided
-      if (staffData.password) {
-        updateFields["staffs.$.password"] = staffData.password;
-      }
-
-      const result = await db.collection("labs").updateOne(
+      // First update the document
+      const updateResult = await db.collection("labs").updateOne(
         {
           _id: new ObjectId(_id),
           "staffs._id": new ObjectId(staffId),
         },
         {
-          $set: updateFields,
+          $set: {
+            "staffs.$.access": staffAccess,
+            "staffs.$.updatedAt": getGMT(),
+            "staffs.$.updatedBy": systemId,
+          },
         }
       );
 
-      if (result.matchedCount === 0) {
-        return { success: false, message: "Staff not found" };
-      }
-
-      if (result.modifiedCount === 1) {
-        // Return updated staff data
-        const lab = await db.collection("labs").findOne(
-          {
-            _id: new ObjectId(_id),
-            "staffs._id": new ObjectId(staffId),
-          },
-          {
-            projection: {
-              "staffs.$": 1,
-            },
-          }
-        );
-
-        const updatedStaff = lab.staffs[0];
-        const responseStaff = {
-          _id: updatedStaff._id,
-          name: updatedStaff.name,
-          username: updatedStaff.username,
-          email: updatedStaff.email,
-          phone: updatedStaff.phone,
-          access: updatedStaff.access,
-          isActive: updatedStaff.isActive,
-        };
-
-        return {
-          success: true,
-          message: "Staff updated successfully",
-          staff: responseStaff,
-        };
-      } else {
+      if (updateResult.matchedCount === 0) {
         return {
           success: false,
-          message: "Staff was found but not modified",
+          message: "Lab or staff not found",
         };
       }
+
+      if (updateResult.modifiedCount === 0) {
+        return {
+          success: false,
+          message: "Staff found but access was not modified",
+        };
+      }
+
+      // Then fetch the updated staff member
+      const lab = await db.collection("labs").findOne(
+        {
+          _id: new ObjectId(_id),
+          "staffs._id": new ObjectId(staffId),
+        },
+        {
+          projection: { "staffs.$": 1 },
+        }
+      );
+
+      const updatedStaff = lab.staffs[0];
+
+      const responseStaff = {
+        _id: updatedStaff._id,
+        name: updatedStaff.name,
+        username: updatedStaff.username,
+        email: updatedStaff.email,
+        phone: updatedStaff.phone,
+        access: updatedStaff.access,
+        isActive: updatedStaff.isActive,
+      };
+
+      return {
+        success: true,
+        message: "Staff access updated successfully",
+        staff: responseStaff,
+      };
     } catch (e) {
-      return handleError(e, "edit");
+      return handleError(e, "updateAccess");
     }
   }
 }

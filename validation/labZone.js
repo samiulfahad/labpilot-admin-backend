@@ -17,7 +17,7 @@ const validateZoneName = body("zoneName")
 // Validate subZoneName
 const validateSubZoneName = body("subZoneName")
   .notEmpty()
-  .withMessage("Sub Zone name is required.")
+  .withMessage("Subzone name is required.")
   .bail()
   .isString()
   .trim()

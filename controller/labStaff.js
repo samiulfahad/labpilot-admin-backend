@@ -3,8 +3,8 @@ const LabStaff = require("../database/labStaff");
 // Route 1: Add staff
 const createStaff = async (req, res, next) => {
   try {
-    const { _id, name, username, password, access, email, phone } = req.body;
-    const staffData = { name, username, password, access, email, phone };
+    const { _id, name, username, password, access, email, phone, isActive } = req.body;
+    const staffData = { name, username, password, access, email, phone, isActive };
     const systemId = 555;
 
     // Fixed: Pass _id as first parameter, then staffData, then systemId
@@ -72,16 +72,13 @@ const listStaffs = async (req, res, next) => {
   }
 };
 
-// Route 5: Edit staff
-const updateStaff = async (req, res, next) => {
+// Route 5: Edit staff access
+const updateStaffAccess = async (req, res, next) => {
   try {
     // Fixed: Added staffId to destructuring
-    const { _id, staffId, name, username, password, access, email, phone } = req.body;
-    const staffData = { name, username, password, access, email, phone };
+    const { _id, staffId, access } = req.body;
     const systemId = 555;
-
-    // Fixed: Pass staffId as second parameter
-    const result = await LabStaff.edit(_id, staffId, staffData, systemId);
+    const result = await LabStaff.updateAccess(_id, staffId, access, systemId);
 
     if (result.success) {
       return res.status(200).send(result.staff);
@@ -115,6 +112,6 @@ module.exports = {
   deactivateStaff,
   activateStaff,
   listStaffs,
-  updateStaff,
+  updateStaffAccess,
   deleteStaff,
 };

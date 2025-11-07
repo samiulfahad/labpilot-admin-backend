@@ -74,12 +74,11 @@ const validateEmail = body("email")
 // Active Status: required, must be boolean
 const validateIsActive = body("isActive")
   .notEmpty()
-  .trim()
-  .escape()
   .withMessage("Active status is required.")
   .bail()
   .isBoolean()
   .withMessage("Active status must be either true or false.");
+
 
 // Zone: required, must be a string
 const validateZone = validateMongoId("zoneId", "Zone ID");

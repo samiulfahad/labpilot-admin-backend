@@ -2,6 +2,7 @@
 
 const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
+const getGMT = require("../helper/getGMT")
 
 const handleError = (e, methodName) => {
   console.log("Error Location: DB File (database > zone.js)");
@@ -15,7 +16,7 @@ class Zone {
     this.zoneName = zoneName;
     this.subZones = [];
     this.createdBy = systemId;
-    this.createdAt = new Date();
+    this.createdAt = getGMT();
   }
 
   // Function 1: Create a new zone
@@ -103,7 +104,7 @@ class Zone {
           $set: {
             zoneName: zoneName,
             updatedBy: systemId,
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
           },
         }
       );
@@ -155,7 +156,7 @@ class Zone {
       const subZone = {
         _id: new ObjectId(),
         subZoneName: subZoneName,
-        createdAt: new Date(),
+        createdAt: getGMT(),
         createdBy: systemId,
       };
 
@@ -166,7 +167,7 @@ class Zone {
             subZones: subZone,
           },
           $set: {
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         },
@@ -215,9 +216,9 @@ class Zone {
         {
           $set: {
             "subZones.$.subZoneName": newSubZoneName,
-            "subZones.$.updatedAt": new Date(),
+            "subZones.$.updatedAt": getGMT(),
             "subZones.$.updatedBy": systemId,
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         },
@@ -254,7 +255,7 @@ class Zone {
             subZones: { _id: new ObjectId(subZoneId) },
           },
           $set: {
-            updatedAt: new Date(),
+            updatedAt: getGMT(),
             updatedBy: systemId,
           },
         }

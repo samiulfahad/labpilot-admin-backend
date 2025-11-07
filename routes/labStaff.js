@@ -7,26 +7,26 @@ const {
   deactivateStaff,
   activateStaff,
   listStaffs,
-  updateStaff,
+  updateStaffAccess,
   deleteStaff,
 } = require("../controller/labStaff");
 
 // Route 1: Add staff
-router.post("/staff/add", createStaff);
+router.post("/add", createStaff);
 
 // Route 2: Deactivate staff
-router.patch("/staff/deactivate", deactivateStaff);
+router.patch("/deactivate", deactivateStaff);
 
 // Route 3: Activate staff
-router.patch("/staff/activate", activateStaff);
+router.patch("/activate", activateStaff);
 
 // Route 4: Get all staffs
-router.get("/staff/all", listStaffs);
+router.get("/all", listStaffs);
 
 // Route 5: Edit staff
-router.post("/staff/edit", updateStaff);
+router.post("/edit/access", updateStaffAccess);
 
 // Route 6: Delete Staff
-router.delete("/staff/delete", deleteStaff);
+router.delete("/delete", deleteStaff);
 
 module.exports = router;

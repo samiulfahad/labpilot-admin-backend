@@ -2,6 +2,7 @@
 
 const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
+const getGMT = require("../helper/getGMT")
 
 const handleError = (e, methodName) => {
   console.log("Error Location: DB File (database > lab.js)");
@@ -46,8 +47,8 @@ class Lab {
     this.referrers = [];
     this.testList = [];
     this.createdBy = systemId;
-    this.createdAt = new Date();
-    this.updatedAt = new Date();
+    this.createdAt = getGMT();
+    this.updatedAt = getGMT();
   }
 
   // Function 1: Create a new lab
@@ -134,7 +135,7 @@ class Lab {
 
       const updateFields = {
         ...updateData,
-        updatedAt: new Date(),
+        updatedAt: getGMT(),
         updatedBy: systemId,
       };
 

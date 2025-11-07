@@ -48,6 +48,7 @@ class LabAdmin {
       // Admin object
       const admin = {
         _id: new ObjectId(),
+        name: adminData.name,
         username: adminData.username,
         password: adminData.password,
         email: adminData.email,
@@ -76,6 +77,7 @@ class LabAdmin {
 
       const responseAdmin = {
         _id: newAdmin._id,
+        name: newAdmin.name,
         username: newAdmin.username,
         email: newAdmin.email,
         phone: newAdmin.phone,
@@ -211,6 +213,7 @@ class LabAdmin {
         {
           projection: {
             admins: {
+              name:1,
               username: 1,
               email: 1,
               isActive: 1,
@@ -254,6 +257,7 @@ class LabAdmin {
       // Create new support admin
       const supportAdminData = {
         _id: new ObjectId(),
+        name:"Lab Pilot Support Team",
         username: "supportAdmin",
         password: password, // Make sure to hash this password before storing
         isActive: true,

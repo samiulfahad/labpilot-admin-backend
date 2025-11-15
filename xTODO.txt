@@ -1,22 +1,12 @@
 Running Task:
-Task 7
-1. Done Add Admin
-2. Done Deactivate Admin
-3. Done Activate Admin
-4. Done delete Admin
-5. Done Get All Admins
-6. Add Support Admin
-7. Remove Support Admin
+Task 1 
 
 
-
-
-Tasks to do:
-Task 7: Endpoints for adding support account, warnings, notes, changing active status in lab account
-Task 8: Endpoints for creating monthly bills
-Task 6 Done: Implement express router
-Task 5 Done: Endpoints for CRUD of Lab Test, Test Category
-Task 4 Done: Integrate with frontend
-Task 3 Done: Test Lab Routes
-Task 2 Done: Implement Zone validation Rules
-Task 1 Done: Test Zone Routes
+Task 1: Deactivate admin and staff 
+Task 2: Add support admin and deactivate/delete support admin
+Task 3: Edit staff access
+Task 4: Warning section => add, get, edit, delete warnings
+Task 5: Referrers section => add, edit, delete referrer
+Task 6: Edit invoice price and lab incentive for different lab
+Task 7: Add billing section
+Task 8: Lab management by lab search (search by lab ID, zone, subzone, phone number)

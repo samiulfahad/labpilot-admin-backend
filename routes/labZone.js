@@ -22,7 +22,6 @@ const {
   validateEditSubZone,
   validateDeleteSubZone,
 } = require("../validation/labZone");
-const { validateMongoId } = require("../validation/mongoId");
 const handleValidationErrors = require("../validation/handleValidationErrors");
 
 // Add a new Zone

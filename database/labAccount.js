@@ -2,7 +2,7 @@
 
 const { ObjectId } = require("mongodb");
 const { getClient } = require("./connection");
-const getGMT = require("../helper/getGMT")
+const getGMT = require("../helper/getGMT");
 
 const handleError = (e, methodName) => {
   console.log("Error Location: DB File (database > lab.js)");
@@ -11,7 +11,7 @@ const handleError = (e, methodName) => {
   return null;
 };
 
-const projection = {
+const defaultProjection = {
   labName: 1,
   labId: 1,
   address: 1,
@@ -22,6 +22,14 @@ const projection = {
   subZoneId: 1,
   isActive: 1,
   createdAt: 1,
+};
+
+const projectedDataForLabManagement = {
+  "admins.password": 0,
+  "staffs.password": 0,
+  testList: 0,
+  zoneId: 0,
+  subZoneId: 0,
 };
 
 class Lab {
@@ -65,7 +73,7 @@ class Lab {
       const result = await db.collection("labs").insertOne(this);
       if (result.insertedId) {
         // Fetch the inserted lab with projection
-        const insertedLab = await db.collection("labs").findOne({ _id: result.insertedId }, { projection });
+        const insertedLab = await db.collection("labs").findOne({ _id: result.insertedId }, { defaultProjection });
         // console.log(insertedLab);
         return {
           success: true,
@@ -99,7 +107,7 @@ class Lab {
         query[field] = value;
       }
       //  console.log(query);
-      const labs = await db.collection("labs").find(query).project(projection).toArray();
+      const labs = await db.collection("labs").find(query).project(defaultProjection).toArray();
       return labs; // ✅ Always return array (empty if no results)
     } catch (e) {
       return handleError(e, "find");
@@ -107,8 +115,10 @@ class Lab {
   }
 
   // Function 3: Get all labs
-  static async findAll() {
+  static async findAll(isLabManagement) {
     try {
+      let projection = { ...defaultProjection };
+      if (isLabManagement) projection = { ...projectedDataForLabManagement };
       const db = getClient();
       const labs = await db.collection("labs").find({}).project(projection).toArray();
       return labs; // ✅ Always return array

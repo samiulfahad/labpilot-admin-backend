@@ -245,10 +245,11 @@ content-type: application/json
 
 {
     "_id": "690cc86249b30bec94ae353e",
-    "username": "kin474g5o2", 
+    "name": "Kingo Fahad",
+    "username": "kinoF", 
     "password": "12s235d3",
-    "email": "m3e3d4448ss9ieeu43ll.com",
-    "phone": 1342484431933
+    "email": "m3e3489ieeu43ll.com",
+    "phone": 134841933
 }
 
 # Route 2: Deactivate admin
@@ -352,7 +353,7 @@ content-type: application/json
 
 {
     "_id": "690cc86249b30bec94ae353e",
-    "staffId": "690da664f0bbc524fa9c36f8"
+    "staffId": "690e30b05a886f78aac7c914"
 }
 
 
@@ -363,7 +364,7 @@ content-type: application/json
 
 {
     "_id": "690cc86249b30bec94ae353e",
-    "staffId": "690da664f0bbc524fa9c36f8"
+    "staffId": "690e30b05a886f78aac7c914"
 }
 
 # Route 4: Get all staffs
@@ -383,8 +384,8 @@ content-type: application/json
 
 {
     "_id": "690cc86249b30bec94ae353e",
-    "staffId": "690dac5cc80d93750fd77245",
-    "access": [ "cashMemo"]
+    "staffId": "690e30b05a886f78aac7c914",
+    "access": [ "cashMemo", "Mio Mio Mio"]
 }
 
 # Route 5: Delete Staff

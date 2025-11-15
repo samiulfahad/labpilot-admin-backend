@@ -43,7 +43,8 @@ const searchLab = async (req, res, next) => {
 // Function 3: Get All Labs
 const listLabs = async (req, res, next) => {
   try {
-    const labs = await Lab.findAll();
+    const { isLabManagement = false } = req.query;
+    const labs = await Lab.findAll(isLabManagement);
     if (labs && labs.length > 0) {
       return res.status(200).send({ success: true, labs, msg: "Labs retrieved successfully" });
     } else {
